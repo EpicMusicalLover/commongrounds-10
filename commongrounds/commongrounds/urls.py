@@ -25,6 +25,7 @@ urlpatterns = [
     path("localevents/", include("localevents.urls", namespace="localevents")),
     path("merchstore/", include("merchstore.urls", namespace="merchstore")),
     path("diyprojects/", include("diyprojects.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
     path('admin/', admin.site.urls),
 ]
 
