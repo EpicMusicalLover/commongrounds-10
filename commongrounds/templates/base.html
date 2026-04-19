@@ -1,0 +1,14 @@
+
+<header>
+    {% if user.is_authenticated %}
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+    {% endif %}
+    <h2>
+    {% block page_heading %}{% endblock %}
+    </h2>
+</header>
+{% block content %}
+{% endblock %}
