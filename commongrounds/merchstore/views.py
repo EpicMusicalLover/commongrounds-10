@@ -12,5 +12,24 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = "product_detail.html"
 
+class ProductCreateView(DetailView):
+    model = Product
+    template_name = "product_create.html"
+
+
+class ProductUpdateView(DetailView):
+    model = Product
+    template_name = "product_update.html"
+
+
+class CartView(DetailView):
+    model = Product
+    template_name = "cart.html"
+
+
+class TransactionsListView(DetailView):
+    model = Product
+    template_name = "transactions_list.html"
+
 
 # Create your views here.
