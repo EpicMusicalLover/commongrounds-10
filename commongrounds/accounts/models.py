@@ -11,12 +11,12 @@ class Profile(models.Model):
     role = models.CharField(
         max_length=255, 
         choices=[
+            ("User", "User"),
             ("Market Seller", "Market Seller"),
             ("Event Organizer", "Event Organizer"),
             ("Book Contributor", "Book Contributor"),
             ("Project Creator", "Project Creator"),
             ("Commission Maker", "Commission Maker"),
-            ("User", "User"),
         ],
         default="User"
     )

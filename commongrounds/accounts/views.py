@@ -19,5 +19,6 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        Profile.objects.get_or_create(user=self.object, role=form.cleaned_data['role'])
+        user_save = form.save()
+        Profile.objects.get_or_create(user=user_save, role=form.cleaned_data['role'])
         return super().form_valid(form)
