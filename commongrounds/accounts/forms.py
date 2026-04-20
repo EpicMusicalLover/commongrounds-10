@@ -6,7 +6,7 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
     class Meta:
         model = User
-        fields = ['username','email','first_password','second_password']
+        fields = ['username','email','password1','password2','role']
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
