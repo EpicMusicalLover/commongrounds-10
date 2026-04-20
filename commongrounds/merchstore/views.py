@@ -18,11 +18,20 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = "product_detail.html"
 
+
 class ProductCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     required_role = "Market Seller"
     model = Product
     template_name = "product_create.html"
-    fields = ['name', 'product_type', 'product_image', 'description', 'price', 'stock', 'status']
+    fields = [
+        "name",
+        "product_type",
+        "product_image",
+        "description",
+        "price",
+        "stock",
+        "status",
+    ]
 
     def form_valid(self, form):
         form.instance.owner = self.request.user.profile
@@ -33,7 +42,15 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     required_role = "Market Seller"
     model = Product
     template_name = "product_update.html"
-    fields = ['name', 'product_type', 'product_image', 'description', 'price', 'stock', 'status']
+    fields = [
+        "name",
+        "product_type",
+        "product_image",
+        "description",
+        "price",
+        "stock",
+        "status",
+    ]
 
     def form_valid(self, form):
         product = form.instance
@@ -50,9 +67,7 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 @role_required("Market Seller")
 def cart_view(request):
     transactions = Transaction.objects.filter(buyer=request.user.profile)
-    return render(request, "cart.html", {
-        "transactions": transactions
-    })
+    return render(request, "cart.html", {"transactions": transactions})
 
 
 class TransactionsListView(DetailView):

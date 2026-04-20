@@ -1,5 +1,12 @@
 from django.urls import path
-from .views import ProductListView, ProductDetailView, ProductCreateView, ProductUpdateView,cart_view, TransactionsListView
+from .views import (
+    ProductListView,
+    ProductDetailView,
+    ProductCreateView,
+    ProductUpdateView,
+    cart_view,
+    TransactionsListView,
+)
 
 app_name = "merchstore"
 urlpatterns = [

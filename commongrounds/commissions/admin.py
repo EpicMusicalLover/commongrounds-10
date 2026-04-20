@@ -3,14 +3,24 @@ from .models import CommissionType, Commission
 
 
 class CommissionTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "description",)
+    list_display = (
+        "name",
+        "description",
+    )
     search_fields = ("name",)
     ordering = ("name",)
 
 
 class CommissionAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "people_required",)
-    search_fields = ("title", "description",)
+    list_display = (
+        "title",
+        "description",
+        "people_required",
+    )
+    search_fields = (
+        "title",
+        "description",
+    )
     ordering = ("created_on",)
 
 

@@ -2,6 +2,7 @@ from functools import wraps
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.views import redirect_to_login
 
+
 def role_required(required_role):
     def decorator(view_func):
         @wraps(view_func)
@@ -12,5 +13,7 @@ def role_required(required_role):
             if profile.role != required_role:
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
+
         return wrapper
+
     return decorator

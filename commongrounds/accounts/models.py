@@ -1,15 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Profile(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=63)
     email = models.EmailField()
     role = models.CharField(
-        max_length=255, 
+        max_length=255,
         choices=[
             ("User", "User"),
             ("Market Seller", "Market Seller"),
@@ -18,7 +16,7 @@ class Profile(models.Model):
             ("Project Creator", "Project Creator"),
             ("Commission Maker", "Commission Maker"),
         ],
-        default="User"
+        default="User",
     )
 
     def __str__(self):
