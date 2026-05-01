@@ -3,14 +3,14 @@
 
 <h2>Cart</h2>
 
-{% for owner, items in grouped_transactions.items %}
+{% for owner, items in transactions_group.items %}
     <h3>Seller: {{ owner }}</h3>
 
     {% for t in items %}
         <div>
-            <p>Product: {{ t.product.name }}</p>
-            <p>Amount: {{ t.amount }}</p>
-            <p>Status: {{ t.status }}</p>
+            <p><strong>Product:</strong> {{ t.product.name }}</p>
+            <p><strong>Amount:</strong> {{ t.amount }}</p>
+            <p><strong>Status:</strong> {{ t.status }}</p>
         </div>
     {% endfor %}
 

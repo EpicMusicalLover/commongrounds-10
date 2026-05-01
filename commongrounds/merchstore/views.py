@@ -95,7 +95,14 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 @role_required("Market Seller")
 def cart_view(request):
     transactions = Transaction.objects.filter(buyer=request.user.profile)
-    return render(request, "cart.html", {"transactions": transactions})
+    transactions_group = {}
+    for t in transactions:
+        owner = t.product.owner
+        if owner not in transactions_group:
+            transactions_group[owner]=[]
+        transactions_group.append(t)
+
+    return render(request, "cart.html", {"transactions": transactions_group})
 
 
 class TransactionsListView(DetailView):
