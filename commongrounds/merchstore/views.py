@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
 from .models import Transaction, Product, ProductType
 from .forms import TransactionForm
-
+from .strategies import (AuthenticatedPurchaseStrategy,GuestPurchaseStrategy)
 
 class ProductListView(ListView):
     model = Product
@@ -31,22 +31,17 @@ class ProductDetailView(DetailView):
         return context
     
     def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if self.get_object().owner == request.user.profile:
-                return redirect("merchstore:product-detail", pk=self.get_object().pk)
-        if TransactionForm(request.POST).is_valid():
-            if not request.user.is_authenticated:
-                return redirect("login")
-            transaction = TransactionForm(request.POST).save(commit=False)
-            transaction.product = self.get_object()
-            transaction.buyer = request.user.profile
-            transaction.status = "On cart"
-            transaction.save()
-            self.get_object().stock -= transaction.amount
-            self.get_object().save()
-
-            return redirect("merchstore:cart")
-
+        self.object = self.get_object()
+        product = self.object
+        if request.user.is_authenticated and product.owner == request.user.profile:
+            return redirect("merchstore:product-detail", pk=product.pk)
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            if request.user.is_authenticated:
+                strategy = AuthenticatedPurchaseStrategy()
+            else:
+                strategy = GuestPurchaseStrategy()
+            return strategy.execute(request, product, form)
         return self.get(request, *args, **kwargs)
 
 

@@ -16,8 +16,9 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit"{% if object.stock == 0 %}disabled{% endif %}>Buy</button>
+    {% if object.stock == 0 %}
+        <button type="submit" disabled>Out of Stock</button>
+    {% else %}
+        <button type="submit">Buy</button>
+    {% endif %}
 </form>
-
-<a href="{% url 'merchstore:product-list' %}">Back to the Product List</a>
-{% endblock %}
