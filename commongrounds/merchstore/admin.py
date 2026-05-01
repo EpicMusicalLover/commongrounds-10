@@ -10,33 +10,37 @@ class ProductTypeAdmin(admin.ModelAdmin):
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    list_display = ('name','product_type','owner','price','stock','status',)
-    list_filter = ('status', 'product_type')
-    search_fields = ('name', 'description')
+    list_display = (
+        "name",
+        "product_type",
+        "owner",
+        "price",
+        "stock",
+        "status",
+    )
+    list_filter = ("status", "product_type")
+    search_fields = ("name", "description")
     fieldsets = [
-        ('Basics', {
-            'fields': ['name', 'product_type', 'owner']
-        }),
-        ('Details', {
-            'fields': ['description', 'product_image']
-        }),
-        ('Pricing', {
-            'fields': ['price', 'stock', 'status']
-        }),
+        ("Basics", {"fields": ["name", "product_type", "owner"]}),
+        ("Details", {"fields": ["description", "product_image"]}),
+        ("Pricing", {"fields": ["price", "stock", "status"]}),
     ]
+
 
 class TransactionAdmin(admin.ModelAdmin):
     model = Transaction
-    list_display = ('buyer','product','amount','status','created_on',)
-    list_filter = ('status',)
-    search_fields = ('buyer__user__username', 'product__name')
+    list_display = (
+        "buyer",
+        "product",
+        "amount",
+        "status",
+        "created_on",
+    )
+    list_filter = ("status",)
+    search_fields = ("buyer__user__username", "product__name")
     fieldsets = [
-        ('Transaction', {
-            'fields': ['buyer', 'product', 'amount']
-        }),
-        ('Status', {
-            'fields': ['status']
-        }),
+        ("Transaction", {"fields": ["buyer", "product", "amount"]}),
+        ("Status", {"fields": ["status"]}),
     ]
 
 

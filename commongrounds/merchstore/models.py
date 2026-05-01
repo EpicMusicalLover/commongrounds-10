@@ -36,11 +36,9 @@ class Product(models.Model):
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(Decimal('0.01'))]
+        validators=[MinValueValidator(Decimal("0.01"))]
     )
-    stock = models.IntegerField(
-        validators = [MinValueValidator(0)]
-    )
+    stock = models.IntegerField(validators=[MinValueValidator(0)])
     status = models.CharField(
         max_length=255,
         choices=[
@@ -56,6 +54,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
     def get_absolute_url(self):
         return reverse("merchstore:product-detail", kwargs={"pk": self.pk})
 
@@ -71,9 +70,7 @@ class Transaction(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
-    amount = models.IntegerField(
-        validators = [MinValueValidator(1)]
-    )
+    amount = models.IntegerField(validators=[MinValueValidator(1)])
     status = models.CharField(
         max_length=255,
         choices=[

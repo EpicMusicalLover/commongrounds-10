@@ -3,20 +3,26 @@ from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from accounts.decorators import role_required
+# from accounts.decorators import role_required
 from .models import Transaction, Product
 from .forms import TransactionForm
-from .strategies import (AuthenticatedPurchaseStrategy,GuestPurchaseStrategy)
+from .strategies import AuthenticatedPurchaseStrategy, GuestPurchaseStrategy
+
 
 class ProductListView(ListView):
     model = Product
     template_name = "product_list.html"
     context_object_name = "all_products"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            context["your_products"] = Product.objects.filter(owner=self.request.user.profile)
-            context["other_products"] = Product.objects.exclude(owner=self.request.user.profile)
+            context["your_products"] = Product.objects.filter(
+                owner=self.request.user.profile
+            )
+            context["other_products"] = Product.objects.exclude(
+                owner=self.request.user.profile
+            )
         else:
             context["other_products"] = Product.objects.all()
         return context
@@ -25,15 +31,19 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView):
     model = Product
     template_name = "product_detail.html"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = TransactionForm()
         return context
-    
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         product = self.object
-        if request.user.is_authenticated and product.owner == request.user.profile:
+        if (
+            request.user.is_authenticated
+            and product.owner == request.user.profile
+        ):
             return redirect("merchstore:product-detail", pk=product.pk)
         form = TransactionForm(request.POST)
         if form.is_valid():
@@ -77,6 +87,7 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
         "stock",
         "status",
     ]
+
     def form_valid(self, form):
         if form.instance.stock == 0:
             form.instance.status = "out_of_stock"
@@ -88,12 +99,14 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
 @login_required
 def cart_view(request):
-    transactions = Transaction.objects.filter(buyer=request.user.profile,)
+    transactions = Transaction.objects.filter(
+        buyer=request.user.profile,
+    )
     transactions_group = {}
     for t in transactions:
         owner = t.product.owner
         if owner not in transactions_group:
-            transactions_group[owner]=[]
+            transactions_group[owner] = []
         transactions_group[owner].append(t)
 
     return render(request, "cart.html", {"transactions": transactions_group})
