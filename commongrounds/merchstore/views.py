@@ -105,9 +105,26 @@ def cart_view(request):
     return render(request, "cart.html", {"transactions": transactions_group})
 
 
-class TransactionsListView(DetailView):
-    model = Product
+class TransactionsListView(LoginRequiredMixin, ListView):
+    model = Transaction
     template_name = "transactions_list.html"
+    context_object_name = "transactions"
+
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            product__owner=self.request.user.profile
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grouped = {}
+        for t in context["transactions"]:
+            buyer = t.buyer
+            if buyer not in grouped:
+                grouped[buyer] = []
+            grouped[buyer].append(t)
+        context["transactions_group"] = grouped
+        return context
 
 
 # Create your views here.
