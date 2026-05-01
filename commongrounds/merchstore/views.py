@@ -82,13 +82,11 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
         "stock",
         "status",
     ]
-
     def form_valid(self, form):
-        product = form.instance
-        if product.stock == 0:
-            product.status = "out_of_stock"
+        if form.instance.stock == 0:
+            form.instance.status = "out_of_stock"
         else:
-            product.status = "available"
+            form.instance.status = "available"
 
         return super().form_valid(form)
 
