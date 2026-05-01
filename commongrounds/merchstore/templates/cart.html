@@ -7,11 +7,12 @@
     <h3>Seller: {{ owner }}</h3>
 
     {% for t in items %}
-        <div>
-            <p><strong>Product:</strong> {{ t.product.name }}</p>
-            <p><strong>Amount:</strong> {{ t.amount }}</p>
-            <p><strong>Status:</strong> {{ t.status }}</p>
-        </div>
+  
+            <li><strong>Product:</strong> {{ t.product.name }}</li>
+            <li><strong>Amount:</strong> {{ t.amount }}</li>
+            <li><strong>Status:</strong> {{ t.status }}</li>
+            <br>
+
     {% endfor %}
 
 {% empty %}
