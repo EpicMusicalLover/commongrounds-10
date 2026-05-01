@@ -4,9 +4,8 @@ from accounts.mixins import RoleRequiredMixin
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
-from .models import Transaction
+from .models import Transaction, Product, ProductType
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Product
 
 
 class ProductListView(ListView):
@@ -25,7 +24,6 @@ class ProductCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     template_name = "product_create.html"
     fields = [
         "name",
-        "product_type",
         "product_image",
         "description",
         "price",
@@ -35,6 +33,7 @@ class ProductCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user.profile
+        form.instance.product_type = ProductType.objects.first()
         return super().form_valid(form)
 
 
@@ -44,7 +43,6 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     template_name = "product_update.html"
     fields = [
         "name",
-        "product_type",
         "product_image",
         "description",
         "price",
@@ -54,6 +52,7 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         product = form.instance
+        form.instance.product_type = self.get_object().product_type
 
         if product.stock == 0:
             product.status = "out_of_stock"
