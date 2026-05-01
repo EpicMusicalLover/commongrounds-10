@@ -1,8 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
-
-# from django.urls import reverse
+from django.urls import reverse
 
 
 class ProductType(models.Model):
@@ -37,10 +36,10 @@ class Product(models.Model):
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validate=[MinValueValidator(Decimal('0.01'))]
+        validators=[MinValueValidator(Decimal('0.01'))]
     )
     stock = models.IntegerField(
-        validate = [MinValueValidator(0)]
+        validators = [MinValueValidator(0)]
     )
     status = models.CharField(
         max_length=255,
@@ -57,6 +56,8 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    def get_absolute_url(self):
+        return reverse("merchstore:product-detail", kwargs={"pk": self.pk})
 
 
 class Transaction(models.Model):
@@ -71,7 +72,7 @@ class Transaction(models.Model):
         null=True,
     )
     amount = models.IntegerField(
-        validate = [MinValueValidator(1)]
+        validators = [MinValueValidator(1)]
     )
     status = models.CharField(
         max_length=255,

@@ -95,7 +95,7 @@ def cart_view(request):
         owner = t.product.owner
         if owner not in transactions_group:
             transactions_group[owner]=[]
-        transactions_group.append(t)
+        transactions_group[owner].append(t)
 
     return render(request, "cart.html", {"transactions": transactions_group})
 

@@ -6,21 +6,19 @@
 {% if user.is_authenticated %}
     <h3>Your Products</h3>
     {% for p in your_products %}
-        <p>{{ p.name }} - {{ p.price }}</p>
+        <p><a href="{% url 'merchstore:product-detail' p.pk %}">{{ p.name }}</a> - ₱{{ p.price }}</p>
     {% empty %}
         <p>You have no products.</p>
     {% endfor %}
-    <hr>
 {% endif %}
 
 <h3>All Products</h3>
 {% for p in other_products %}
-    <p>{{ p.name }} - {{ p.price }}</p>
+    <p><a href="{% url 'merchstore:product-detail' p.pk %}">{{ p.name }}</a> - ₱{{ p.price }}</p>
 {% empty %}
     <p>No products available.</p>
 {% endfor %}
 
-<br>
 <a href="{% url 'merchstore:product-create' %}">
     Add Product
 </a>
