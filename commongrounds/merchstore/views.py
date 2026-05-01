@@ -1,11 +1,12 @@
-from django.views.generic import DetailView, CreateView, UpdateView
-from django.views.generic.list import ListView
+from django.views.generic import DetailView, CreateView, UpdateView, ListView
 from accounts.mixins import RoleRequiredMixin
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
 from .models import Transaction, Product, ProductType
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import TransactionForm
 
 
 class ProductListView(ListView):
@@ -25,6 +26,29 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView):
     model = Product
     template_name = "product_detail.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = TransactionForm()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if self.get_object().owner == request.user.profile:
+                return redirect("merchstore:product-detail", pk=self.get_object().pk)
+        if TransactionForm(request.POST).is_valid():
+            if not request.user.is_authenticated:
+                return redirect_to_login(request.get_full_path())
+            transaction = TransactionForm(request.POST).save(commit=False)
+            transaction.product = self.get_object()
+            transaction.buyer = request.user.profile
+            transaction.status = "On cart"
+            transaction.save()
+            self.get_object().stock -= transaction.amount
+            self.get_object().save()
+
+            return redirect("merchstore:cart")
+
+        return self.get(request, *args, **kwargs)
 
 
 class ProductCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
