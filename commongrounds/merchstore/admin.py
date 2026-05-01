@@ -14,13 +14,13 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('status', 'product_type')
     search_fields = ('name', 'description')
     fieldsets = [
-        ('Basic Info', {
+        ('Basics', {
             'fields': ['name', 'product_type', 'owner']
         }),
         ('Details', {
             'fields': ['description', 'product_image']
         }),
-        ('Pricing & Stock', {
+        ('Pricing', {
             'fields': ['price', 'stock', 'status']
         }),
     ]
@@ -28,17 +28,14 @@ class ProductAdmin(admin.ModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
     model = Transaction
     list_display = ('buyer','product','amount','status','created_on',)
-    list_filter = ('status', 'created_on')
+    list_filter = ('status',)
     search_fields = ('buyer__user__username', 'product__name')
     fieldsets = [
-        ('Transaction Info', {
+        ('Transaction', {
             'fields': ['buyer', 'product', 'amount']
         }),
         ('Status', {
             'fields': ['status']
-        }),
-        ('Metadata', {
-            'fields': ['created_on']
         }),
     ]
 

@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
-from .models import Transaction, Product, ProductType
+from .models import Transaction, Product
 from .forms import TransactionForm
 from .strategies import (AuthenticatedPurchaseStrategy,GuestPurchaseStrategy)
 
@@ -87,9 +87,8 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
 
 @login_required
-@role_required("Market Seller")
 def cart_view(request):
-    transactions = Transaction.objects.filter(buyer=request.user.profile)
+    transactions = Transaction.objects.filter(buyer=request.user.profile,)
     transactions_group = {}
     for t in transactions:
         owner = t.product.owner

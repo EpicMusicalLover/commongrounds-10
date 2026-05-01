@@ -26,3 +26,5 @@ class GuestPurchaseStrategy(BaseTransactionStrategy):
         }
 
         return redirect("login")
+    
+    
