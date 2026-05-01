@@ -37,10 +37,10 @@ class Product(models.Model):
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        # validate=[MinValueValidator(Decimal('0.01'))]
+        validate=[MinValueValidator(Decimal('0.01'))]
     )
     stock = models.IntegerField(
-        # validate = [MinValueValidator(0)]
+        validate = [MinValueValidator(0)]
     )
     status = models.CharField(
         max_length=255,
@@ -71,7 +71,7 @@ class Transaction(models.Model):
         null=True,
     )
     amount = models.IntegerField(
-        # validate = [MinValueValidator(1)]
+        validate = [MinValueValidator(1)]
     )
     status = models.CharField(
         max_length=255,
