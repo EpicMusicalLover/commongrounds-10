@@ -1,0 +1,17 @@
+{% block content %}
+    <h1>DIY Projects List</h1>
+
+    <h2>Project List</h2>
+
+    <ul>
+        {% for project in project_list %}
+            <li>
+                <a href="{% url 'diyprojects:project_detail' project.pk %}">
+                    {{ project.title }}
+                </a>
+            </li>
+        {% empty %}
+            <p>No projects available.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

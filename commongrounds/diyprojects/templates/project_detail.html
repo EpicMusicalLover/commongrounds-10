@@ -1,0 +1,14 @@
+{% block content %}
+    <h1>DIY Projects</h1>
+
+    <h2>{{ project.title }} Details</h2>
+
+    <p><strong>Category:</strong> {{ project.category.name }}</p>
+    <p><strong>Description:</strong> {{ project.description }}</p>
+    <p><strong>Materials Needed:</strong> {{ project.materials }}</p>
+    <p><strong>Steps:</strong> {{ project.steps }}</p>
+    <p><strong>Created On:</strong> {{ project.created_on|date:"F j, Y, g:i a" }}</p>
+    <p><strong>Updated On:</strong> {{ project.updated_on|date:"F j, Y, g:i a" }}</p>
+
+    <a href="{% url 'diyprojects:project_list' %}">Back to DIY Project List</a>
+{% endblock %}

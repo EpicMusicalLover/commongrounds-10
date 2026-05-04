@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     # "commissions",
     # "localevents",
     # "merchstore",
-    # "diyprojects",
+    "diyprojects",
     "accounts",
 ]
 
