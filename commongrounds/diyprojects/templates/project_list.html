@@ -1,17 +1,27 @@
+{% extends 'base.html' %}
 {% block content %}
-    <h1>DIY Projects List</h1>
+<h2>DIY Projects</h2>
 
-    <h2>Project List</h2>
+{% if user.is_authenticated %}
+    {% if my_projects %}
+        <h3>Projects Created</h3>
+        <ul>{% for p in my_projects %}<li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></li>{% endfor %}</ul>
+    {% endif %}
 
-    <ul>
-        {% for project in project_list %}
-            <li>
-                <a href="{% url 'diyprojects:project_detail' project.pk %}">
-                    {{ project.title }}
-                </a>
-            </li>
-        {% empty %}
-            <p>No projects available.</p>
-        {% endfor %}
-    </ul>
+    {% if favorited_projects %}
+        <h3>Projects Favorited</h3>
+        <ul>{% for p in favorited_projects %}<li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a></li>{% endfor %}</ul>
+    {% endif %}
+{% endif %}
+
+<h3>All Projects</h3>
+<ul>
+    {% for p in all_projects %}
+        <li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a> ({{ p.category.name }})</li>
+    {% endfor %}
+</ul>
+
+{% if user.profile.role == "Project Creator" %}
+    <a href="{% url 'diyprojects:project_create' %}">Create New Project</a>
+{% endif %}
 {% endblock %}

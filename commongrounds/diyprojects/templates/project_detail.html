@@ -1,14 +1,37 @@
+{% extends 'base.html' %}
 {% block content %}
-    <h1>DIY Projects</h1>
+<h1>{{ project.title }}</h1>
+<p>Category: {{ project.category.name }} | Creator: {{ project.creator.display_name }}</p>
+<p>Average Rating: {{ average_rating }}/10</p>
 
-    <h2>{{ project.title }} Details</h2>
+<h3>Description</h3>
+<p>{{ project.description }}</p>
 
-    <p><strong>Category:</strong> {{ project.category.name }}</p>
-    <p><strong>Description:</strong> {{ project.description }}</p>
-    <p><strong>Materials Needed:</strong> {{ project.materials }}</p>
-    <p><strong>Steps:</strong> {{ project.steps }}</p>
-    <p><strong>Created On:</strong> {{ project.created_on|date:"F j, Y, g:i a" }}</p>
-    <p><strong>Updated On:</strong> {{ project.updated_on|date:"F j, Y, g:i a" }}</p>
+{% if user.is_authenticated %}
+    <hr>
+    <h4>Leave a Rating</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ rating_form.as_p }}
+        <button type="submit" name="submit_rating">Submit Rating</button>
+    </form>
 
-    <a href="{% url 'diyprojects:project_list' %}">Back to DIY Project List</a>
+    <h4>Leave a Review</h4>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit" name="submit_review">Submit Review</button>
+    </form>
+{% endif %}
+
+<h3>Reviews</h3>
+{% for review in project.reviews.all %}
+    <p><strong>{{ review.reviewer.display_name }}</strong>: {{ review.comment }}</p>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}
+
+{% if project.creator == user.profile %}
+    <a href="{% url 'diyprojects:project_update' project.pk %}">Edit Project</a>
+{% endif %}
 {% endblock %}
