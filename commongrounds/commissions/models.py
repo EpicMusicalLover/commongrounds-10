@@ -14,8 +14,8 @@ class CommissionType(models.Model):
 
 class Commission(models.Model):
     class CommissionStatus(models.TextChoices):
-        isOpen = 'Open'
-        isFull = 'Full'
+        is_open = 'A', 'Open'
+        is_full = 'B', 'Full'
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -32,7 +32,7 @@ class Commission(models.Model):
     people_required = models.PositiveIntegerField()
     status = models.CharField(
         choices=CommissionStatus.choices,
-        default = CommissionStatus.isOpen
+        default = CommissionStatus.is_open
     )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -42,3 +42,53 @@ class Commission(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Job(models.Model):
+    class JobStatus(models.TextChoices):
+        is_open = 'A', 'Open'
+        is_full = 'B', 'Full'
+
+    commission = models.ForeignKey(
+        Commission,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    role = models.CharField(max_length=255)
+    manpower_required = models.PositiveIntegerField()
+    status = models.CharField(
+        choices=JobStatus.choices,
+        default = JobStatus.is_open
+    )
+
+    class Meta:
+        ordering = ["status", "-manpower_required", "role"]
+
+    def __str__(self):
+        return self.role
+
+
+class JobApplication(models.Model):
+    class JobApplicationStatus(models.TextChoices):
+        is_pending = 'A', 'Pending'
+        is_accepted = 'B', 'Accepted'
+        is_rejected = 'C', 'Rejected'
+
+    job = models.ForeignKey(
+        Job,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    applicant = models.ForeignKey(
+        "accounts.Profile",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    status = models.CharField(
+        choices=JobApplicationStatus.choices,
+        default = JobApplicationStatus.is_pending
+    )
+    applied_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["status", "-applied_on"]

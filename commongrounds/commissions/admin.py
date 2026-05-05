@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CommissionType, Commission
+from .models import CommissionType, Commission, Job, JobApplication
 
 
 class CommissionTypeAdmin(admin.ModelAdmin):
@@ -13,6 +13,11 @@ class CommissionAdmin(admin.ModelAdmin):
     search_fields = ("title", "description",)
     ordering = ("created_on",)
 
+class JobAdmin(admin.ModelAdmin):
+    list_display = ("role", "status",)
+    search_fields = ("role",)
+    ordering = ("status",)
 
 admin.site.register(CommissionType, CommissionTypeAdmin)
 admin.site.register(Commission, CommissionAdmin)
+admin.site.register(Job, JobAdmin)
