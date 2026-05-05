@@ -5,7 +5,6 @@ from .models import Book, Bookmark, Borrow, BookReview
 from .forms import BookBorrowForm, BookFormFactory
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
 
 
 class BookListView(ListView):
