@@ -31,7 +31,7 @@ class BookUpdateForm(forms.ModelForm):
 class BookBorrowForm(forms.ModelForm):
     class Meta:
         model = Borrow
-        fields = ['date_borrowed']
+        fields = ['name', 'date_borrowed']
 
 
 class BookFormFactory:
