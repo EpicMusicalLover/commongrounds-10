@@ -1,11 +1,11 @@
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 
-from .models import Project, ProjectReview, ProjectRating
+from .models import Project, ProjectReview, ProjectRating, Favorite
 from .forms import ProjectForm, ProjectReviewForm, ProjectRatingForm
 from .repositories import ProjectRepository
 from accounts.mixins import RoleRequiredMixin
@@ -15,24 +15,27 @@ class ProjectListView(ListView):
     template_name = 'diyprojects/project_list.html'
     context_object_name = 'all_projects'
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.repo = ProjectRepository() 
+
     def get_queryset(self):
-        repo = ProjectRepository()
-        return repo.get_all()
+        return self.repo.get_all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             profile = self.request.user.profile
-            context['my_projects'] = Project.objects.filter(creator=profile)
-            context['favorited_projects'] = Project.objects.filter(favorites__profile=profile)
-            context['reviewed_projects'] = Project.objects.filter(reviews__reviewer=profile).distinct()
+            context['my_projects'] = self.repo.get_by_creator(profile)
+            context['favorited_projects'] = self.repo.get_favorited_by(profile)
+            context['reviewed_projects'] = self.repo.get_reviewed_by(profile)
             
             excluded_ids = (
                 list(context['my_projects'].values_list('id', flat=True)) +
                 list(context['favorited_projects'].values_list('id', flat=True)) +
                 list(context['reviewed_projects'].values_list('id', flat=True))
             )
-            context['all_projects'] = context['all_projects'].exclude(id__in=excluded_ids)
+            context['all_projects'] = self.repo.get_all_except(excluded_ids)
         return context
 
 class ProjectDetailView(DetailView):
@@ -40,9 +43,12 @@ class ProjectDetailView(DetailView):
     template_name = 'diyprojects/project_detail.html'
     context_object_name = 'project'
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.repo = ProjectRepository()
+
     def get_object(self):
-        repo = ProjectRepository()
-        return repo.get_by_id(self.kwargs.get('pk'))
+        return self.repo.get_by_id(self.kwargs.get('pk'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,10 +56,12 @@ class ProjectDetailView(DetailView):
         
         ratings = project.ratings.all()
         context['average_rating'] = sum(r.score for r in ratings) / ratings.count() if ratings.exists() else 0
+        context['favorite_count'] = project.favorites.count()
         
         if self.request.user.is_authenticated:
             context['review_form'] = ProjectReviewForm()
             context['rating_form'] = ProjectRatingForm()
+            context['is_favorited'] = project.favorites.filter(profile=self.request.user.profile).exists()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -74,10 +82,17 @@ class ProjectDetailView(DetailView):
         elif 'submit_rating' in request.POST:
             form = ProjectRatingForm(request.POST)
             if form.is_valid():
-                rating = form.save(commit=False)
-                rating.project = project
-                rating.profile = profile
-                rating.save()
+                rating, created = ProjectRating.objects.update_or_create(
+                    project=project, profile=profile,
+                    defaults={'score': form.cleaned_data['score']}
+                )
+
+        elif 'toggle_favorite' in request.POST:
+            favorite = Favorite.objects.filter(project=project, profile=profile)
+            if favorite.exists():
+                favorite.delete()
+            else:
+                Favorite.objects.create(project=project, profile=profile)
 
         return redirect('diyprojects:project_detail', pk=project.pk)
 
@@ -97,5 +112,12 @@ class ProjectUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     template_name = 'diyprojects/project_update.html'
     required_role = "Project Creator"
 
-    def get_queryset(self):
-        return Project.objects.filter(creator=self.request.user.profile)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.repo = ProjectRepository()
+
+    def get_object(self):
+        project = self.repo.get_by_id(self.kwargs.get('pk'))
+        if project.creator != self.request.user.profile:
+            raise PermissionDenied
+        return project
