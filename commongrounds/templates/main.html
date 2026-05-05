@@ -1,0 +1,24 @@
+<h1>Common Grounds</h1>
+
+<p>Welcome to common grounds! Please choose any app you'd like to access: </p>
+
+<ul>
+    <li><a href="/accounts/{{ request.user.username }}/">Accounts</a></li>
+    <li><a href="/merchstore/items/">Merchandise Store</a></li>
+    <li><a href="/localevents/events">Local Events</a></li>
+    <li><a href="/bookclub/books/">Book Club</a></li>
+    <li><a href="/diyprojects/projects/">DIY Projects</a></li>
+    <li><a href="/commissions/requests/">Commission Requests</a></li>
+</ul>
+
+<hr>
+
+{% if user.is_authenticated %}
+    <p>Logged in as {{ user.profile.display_name }}</p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+{% else %}
+    <a href="{% url 'login' %}">Login</a>
+{% endif %}
