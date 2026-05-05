@@ -3,7 +3,7 @@
 <h2>DIY Projects List</h2>
 
 {% if user.profile.role == "Project Creator" %}
-    <p><a href="{% url 'diyprojects:project_create' %}">+ Add a project here</a></p>
+    <p><a href="{% url 'diyprojects:project_create' %}">Add Project</a></p>
 {% endif %}
 
 {% if user.is_authenticated %}
