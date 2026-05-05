@@ -40,11 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "bookclub",
     "commissions",
-    # "localevents",
-    # "merchstore",
-    # "diyprojects",
     "accounts",
 ]
 

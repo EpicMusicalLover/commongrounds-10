@@ -21,11 +21,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="main.html"), name="main"),
-    # path("bookclub/", include("bookclub.urls")),
-    # path("commissions/", include("commissions.urls", namespace="commissions")),
-    # path("localevents/", include("localevents.urls", namespace="localevents")),
-    # path("merchstore/", include("merchstore.urls", namespace="merchstore")),
-    # path("diyprojects/", include("diyprojects.urls")),
+    path("commissions/", include("commissions.urls", namespace="commissions")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("accounts.urls")),
     path("admin/", admin.site.urls),
