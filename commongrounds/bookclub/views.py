@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView, UpdateView, View, ListView, DetailView
+from django.views.generic import CreateView, UpdateView, ListView, DetailView
 from datetime import date, timedelta
 from .models import Book, Bookmark, Borrow, BookReview
 from .forms import BookBorrowForm, BookFormFactory
@@ -100,7 +100,7 @@ class BookDetailView(DetailView):
         return redirect('bookclub:book_detail', pk=book.pk)
 
 
-class BookCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
+class BookCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     template_name = "book_form.html"
     required_role = "Book Contributor"
 
@@ -142,7 +142,7 @@ class BookUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
         return render(request, self.template_name, {'form': form, 'book': book})
 
 
-class BookBorrowView(View):
+class BookBorrowView(UpdateView):
     template_name = "book_borrow.html"
 
     def get(self, request, pk):
@@ -181,6 +181,7 @@ class BookBorrowView(View):
                 )
 
             book.available_to_borrow = False
+
             book.save()
 
             return redirect('bookclub:book_detail', pk=book.pk)
