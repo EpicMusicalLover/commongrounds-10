@@ -4,6 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.contrib import messages
 
 from .models import Project, ProjectReview, ProjectRating, Favorite
 from .forms import ProjectForm, ProjectReviewForm, ProjectRatingForm
@@ -59,9 +60,14 @@ class ProjectDetailView(DetailView):
         context['favorite_count'] = project.favorites.count()
         
         if self.request.user.is_authenticated:
+            profile = self.request.user.profile
             context['review_form'] = ProjectReviewForm()
             context['rating_form'] = ProjectRatingForm()
-            context['is_favorited'] = project.favorites.filter(profile=self.request.user.profile).exists()
+            context['is_favorited'] = project.favorites.filter(profile=profile).exists()
+            
+            user_rating_obj = project.ratings.filter(profile=profile).first()
+            context['user_rating'] = user_rating_obj.score if user_rating_obj else None
+            
         return context
 
     def post(self, request, *args, **kwargs):
@@ -91,8 +97,10 @@ class ProjectDetailView(DetailView):
             favorite = Favorite.objects.filter(project=project, profile=profile)
             if favorite.exists():
                 favorite.delete()
+                messages.success(request, f"You removed {project.title} from your favorites")
             else:
                 Favorite.objects.create(project=project, profile=profile)
+                messages.success(request, f"You added {project.title} to your favorites")
 
         return redirect('diyprojects:project_detail', pk=project.pk)
 
@@ -100,7 +108,7 @@ class ProjectCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Project
     form_class = ProjectForm
     template_name = 'diyprojects/project_create.html'
-    required_role = "Project Creator"
+    required_role = "Project Creator" 
 
     def form_valid(self, form):
         form.instance.creator = self.request.user.profile
