@@ -8,8 +8,7 @@
     <button type="submit">Save Changes</button>
 </form>
 
-<hr>
-<a href="{% url 'diyprojects:project_detail' project.pk %}">
-    <button type="button">Cancel</button>
-</a>
+<br>
+<a href="{% url 'diyprojects:project_detail' project.pk %}">Return to Project Details</a> | 
+<a href="{% url 'diyprojects:project_list' %}">Return to Projects List</a>
 {% endblock %}
