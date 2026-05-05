@@ -1,5 +1,6 @@
 from .models import Project
 
+
 class ProjectRepository:
     def get_all(self):
         return Project.objects.all()
@@ -21,6 +22,6 @@ class ProjectRepository:
 
     def get_reviewed_by(self, profile):
         return Project.objects.filter(reviews__reviewer=profile).distinct()
-        
+
     def get_all_except(self, excluded_ids):
         return Project.objects.exclude(id__in=excluded_ids)

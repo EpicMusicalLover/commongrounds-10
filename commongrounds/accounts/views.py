@@ -1,6 +1,7 @@
-from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
+
 from .forms import RegisterForm
 from .models import Profile
 
@@ -25,7 +26,5 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         user_save = form.save()
         Profile.objects.get_or_create(
-            user=user_save,
-            role=form.cleaned_data["role"]
-        )
+            user=user_save, role=form.cleaned_data["role"])
         return super().form_valid(form)

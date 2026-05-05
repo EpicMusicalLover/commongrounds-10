@@ -1,20 +1,22 @@
 from django import forms
-from .models import Project, ProjectReview, ProjectRating
+
+from .models import Project, ProjectRating, ProjectReview
+
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'category', 'description', 'materials', 'steps']
+        fields = ["title", "category", "description", "materials", "steps"]
+
 
 class ProjectReviewForm(forms.ModelForm):
     class Meta:
         model = ProjectReview
-        fields = ['comment', 'image']
+        fields = ["comment", "image"]
+
 
 class ProjectRatingForm(forms.ModelForm):
     class Meta:
         model = ProjectRating
-        fields = ['score']
-        widgets = {
-            'score': forms.NumberInput(attrs={'min': 1, 'max': 10}) 
-        }
+        fields = ["score"]
+        widgets = {"score": forms.NumberInput(attrs={"min": 1, "max": 10})}
