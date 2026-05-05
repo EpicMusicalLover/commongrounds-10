@@ -110,6 +110,7 @@ class BookCreateView(LoginRequiredMixin, RoleRequiredMixin, View):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
+        print(request.POST)
         FormClass = BookFormFactory.get_form("contribute", user=request.user)
         form = FormClass(request.POST)
         if form.is_valid():
@@ -178,6 +179,9 @@ class BookBorrowView(View):
                     date_borrowed=date_borrowed,
                     date_to_return=date_to_return
                 )
+
+            book.available_to_borrow = False
+            book.save()
 
             return redirect('bookclub:book_detail', pk=book.pk)
 

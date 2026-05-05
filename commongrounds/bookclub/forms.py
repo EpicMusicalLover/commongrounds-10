@@ -18,14 +18,14 @@ class BookContributeForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['title', 'genre', 'author', 'synopsis',
-                  'publication_year', 'available_to_borrow']
+                  'publication_year']
 
 
 class BookUpdateForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ['title', 'genre', 'author', 'synopsis',
-                  'publication_year', 'available_to_borrow']
+                  'publication_year']
 
 
 class BookBorrowForm(forms.ModelForm):
