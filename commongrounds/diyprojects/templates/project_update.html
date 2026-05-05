@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Update Project: {{ project.title }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+</form>
+
+<hr>
+<a href="{% url 'diyprojects:project_detail' project.pk %}">
+    <button type="button">Cancel</button>
+</a>
+{% endblock %}
