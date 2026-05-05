@@ -1,35 +1,56 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{ project.title }}</h1>
-<p>Category: {{ project.category.name }} | Creator: {{ project.creator.display_name }}</p>
-<p>Average Rating: {{ average_rating|floatformat:1 }}/10</p>
-<p>Favorites: {{ favorite_count }}</p>
 
-<h3>Description</h3>
-<p>{{ project.description }}</p>
-<h3>Materials</h3>
-<p>{{ project.materials }}</p>
-<h3>Steps</h3>
-<p>{{ project.steps }}</p>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h1>{{ project.title }}</h1>
+
+<p>Average Rating: {{ average_rating|floatformat:1 }}/10.0</p>
 
 {% if user.is_authenticated %}
-    <hr>
+    <p>
+    {% if user_rating %}
+        You rated this project: {{ user_rating|floatformat:1 }}/10.0
+    {% endif %}
+    </p>
+
     <form method="post" style="display:inline;">
         {% csrf_token %}
         <button type="submit" name="toggle_favorite">
             {% if is_favorited %}Unfavorite{% else %}Favorite{% endif %}
         </button>
     </form>
-    <br><br>
+{% endif %}
 
-    <h4>Leave a Rating</h4>
-    <form method="post">
-        {% csrf_token %}
-        {{ rating_form.as_p }}
-        <button type="submit" name="submit_rating">Submit Rating</button>
-    </form>
+<p>{{ favorite_count }} people favorited this project</p>
 
-    <h4>Leave a Review</h4>
+{% if project.creator == user.profile %}
+    <a href="{% url 'diyprojects:project_update' project.pk %}"><button>Edit Project</button></a>
+{% endif %}
+
+<p>Category: {{ project.category.name }}</p>
+
+<h3>Description:</h3>
+<p>{{ project.description }}</p>
+<h3>Materials:</h3>
+<p>{{ project.materials }}</p>
+<h3>Steps:</h3>
+<p>{{ project.steps }}</p>
+
+<p>Created: {{ project.created_on }}</p>
+<p>Updated: {{ project.updated_on }}</p>
+<br>
+<a href="{% url 'diyprojects:project_list' %}">Return to Projects List</a>
+
+<hr>
+<h3>Reviews:</h3>
+{% if user.is_authenticated %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ review_form.as_p }}
@@ -37,16 +58,10 @@
     </form>
 {% endif %}
 
-<hr>
-<h3>Reviews</h3>
 {% for review in project.reviews.all %}
     <p><strong>{{ review.reviewer.display_name }}</strong>: {{ review.comment }}</p>
 {% empty %}
     <p>No reviews yet.</p>
 {% endfor %}
 
-{% if project.creator == user.profile %}
-    <hr>
-    <a href="{% url 'diyprojects:project_update' project.pk %}"><button>Edit Project</button></a>
-{% endif %}
 {% endblock %}
