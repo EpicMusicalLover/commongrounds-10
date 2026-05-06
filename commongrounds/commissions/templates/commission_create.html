@@ -1,0 +1,19 @@
+{% block content %}
+<h1>Commission Requests</h1>
+<h2>Commission Creation</h2>
+
+<p>Maker: {{ request.user.username }}</p>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <br>
+    <h3>Job Creation</h3>
+    {{ job.management_form }}
+    {% for job in job %}
+        {{ job.as_p }}
+    {% endfor %}
+
+    <button type="submit">Create Commission</button>
+</form>
+{% endblock %}
