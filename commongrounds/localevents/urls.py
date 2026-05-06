@@ -4,7 +4,7 @@ from .views import (
     EventDetailView,
     EventCreateView,
     EventUpdateView,
-    EventSignUpView,
+    EventSignupView,
 )
 
 app_name = "localevents"
@@ -19,7 +19,7 @@ urlpatterns = [
     ),
     path(
         "event/<int:pk>/signup/", 
-        EventSignUpView.as_view(),
+        EventSignupView.as_view(),
         name="event-signup"
     ),
 ]
