@@ -14,10 +14,10 @@ class CommissionType(models.Model):
 
 class Commission(models.Model):
     class CommissionStatus(models.TextChoices):
-        is_open = 'A', 'Open'
-        is_full = 'B', 'Full'
-        is_completed = 'C', 'Completed'
-        is_discontinued = 'D', 'Discontinued'
+        is_open = 'Open', 'Open'
+        is_full = 'Full', 'Full'
+        is_completed = 'Completed', 'Completed'
+        is_discontinued = 'Discontinued', 'Discontinued'
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -27,7 +27,7 @@ class Commission(models.Model):
         null=True,
     )
     maker = models.ForeignKey(
-        "accounts.Profile",
+        'accounts.Profile',
         on_delete=models.CASCADE,
         null=True,
     )
@@ -48,8 +48,8 @@ class Commission(models.Model):
 
 class Job(models.Model):
     class JobStatus(models.TextChoices):
-        is_open = 'A', 'Open'
-        is_full = 'B', 'Full'
+        is_open = 'Open', 'Open'
+        is_full = 'Full', 'Full'
 
     commission = models.ForeignKey(
         Commission,
@@ -73,19 +73,20 @@ class Job(models.Model):
 
 class JobApplication(models.Model):
     class JobApplicationStatus(models.TextChoices):
-        is_pending = 'A', 'Pending'
-        is_accepted = 'B', 'Accepted'
-        is_rejected = 'C', 'Rejected'
+        is_pending = 'Pending', 'Pending'
+        is_accepted = 'Accepted', 'Accepted'
+        is_rejected = 'Rejected', 'Rejected'
 
+    applicant = models.ForeignKey(
+        'accounts.Profile',
+        on_delete=models.CASCADE,
+        null=True,
+    )
     job = models.ForeignKey(
         Job,
         on_delete=models.CASCADE,
         null=True,
-    )
-    applicant = models.ForeignKey(
-        "accounts.Profile",
-        on_delete=models.CASCADE,
-        null=True,
+        related_name="application"
     )
     status = models.CharField(
         choices=JobApplicationStatus.choices,
@@ -95,3 +96,6 @@ class JobApplication(models.Model):
 
     class Meta:
         ordering = ["status", "-applied_on"]
+
+    def __str__(self):
+        return f"{self.applicant}"

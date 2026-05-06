@@ -15,7 +15,7 @@
         <p>You have no commissions.</p>
     {% endfor %}
     <h3>Your Applications</h3>
-    {% for application in your_applications %}
+    {% for commission in your_applications %}
         <li>
             <a href="{% url 'commissions:commission-detail' commission.pk %}">
                 {{ commission.title }}
@@ -37,4 +37,6 @@
     <p>There are no current commissions.</p>
 {% endfor %}
 
+<br><br>
+<a href="{% url 'commissions:commission-create' %}">Create New Commission</a>
 {% endblock %}

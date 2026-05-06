@@ -7,12 +7,18 @@
 <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
 <p><strong>Created On:</strong> {{ commission.created_on }}</p>
 <p><strong>Updated On:</strong> {{ commission.updated_on }}</p>
+
 <br>
 <strong>Jobs Required</strong> 
 {% for job in commission.jobs.all %}
     <li>{{ job }}</li>
 {% endfor %}
+
 <br>
+<p>Sum of Manpower: {{ sum_of_manpower }}</p>
+<p>Open Manpower: {{ open_manpower }}</p>
+
+<br><br>
 <a href="{% url 'commissions:commission-list' %}">
     Back to Commission List
 </a>

@@ -11,11 +11,12 @@ class CommissionListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
+            user = self.request.user.profile
             context["your_commissions"] = Commission.objects.filter(
                 maker=self.request.user.profile
             )
-            context["your_applications"] = JobApplication.objects.filter(
-                applicant=self.request.user.profile
+            context["your_applications"] = Commission.objects.filter(
+                jobs__application__applicant=self.request.user.profile
             )
             context["other_commissions"] = Commission.objects.exclude(
                 maker=self.request.user.profile
@@ -31,8 +32,25 @@ class CommissionDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        return context
 
+        sum_of_manpower = 0
+        accepted = 0
+        open_manpower = 0
+        commission_pk = self.kwargs['pk']
+        for jobs in Job.objects.filter(commission=Commission.objects.get(pk=commission_pk)):
+            sum_of_manpower += jobs.manpower_required
+            for signee in JobApplication.objects.filter(job=jobs):
+                if signee.status == "Accepted":
+                    accepted += 1
+
+        open_manpower = sum_of_manpower - accepted
+
+        context["sum_of_manpower"] = sum_of_manpower
+        context["open_manpower"] = open_manpower
+
+        # if self.request.user.is_authenticated:
+
+        return context
 
 
 class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):

@@ -18,6 +18,12 @@ class JobAdmin(admin.ModelAdmin):
     search_fields = ("role",)
     ordering = ("status",)
 
+class JobApplicationAdmin(admin.ModelAdmin):
+    list_display = ("applicant", "status",)
+    search_fields = ("applicant",)
+    ordering = ("status",)
+
 admin.site.register(CommissionType, CommissionTypeAdmin)
 admin.site.register(Commission, CommissionAdmin)
 admin.site.register(Job, JobAdmin)
+admin.site.register(JobApplication, JobApplicationAdmin)
