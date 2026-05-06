@@ -109,7 +109,6 @@ class BookCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        print(request.POST)
         FormClass = BookFormFactory.get_form("contribute", user=request.user)
         form = FormClass(request.POST)
         if form.is_valid():
