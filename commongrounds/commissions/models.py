@@ -55,7 +55,7 @@ class Job(models.Model):
         Commission,
         on_delete=models.CASCADE,
         null=True,
-        related_name='jobs_needed'
+        related_name="jobs"
     )
     role = models.CharField(max_length=255)
     manpower_required = models.PositiveIntegerField()

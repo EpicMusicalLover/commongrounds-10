@@ -7,7 +7,11 @@
 <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
 <p><strong>Created On:</strong> {{ commission.created_on }}</p>
 <p><strong>Updated On:</strong> {{ commission.updated_on }}</p>
-
+<br>
+<strong>Jobs Required</strong> 
+{% for job in commission.jobs.all %}
+    <li>{{ job }}</li>
+{% endfor %}
 <br>
 <a href="{% url 'commissions:commission-list' %}">
     Back to Commission List
