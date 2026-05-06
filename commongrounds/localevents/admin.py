@@ -15,10 +15,14 @@ class EventAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "category",
+        "organizer",
+        "event_image",
         "description",
         "location",
         "start_time",
         "end_time",
+        "event_capacity",
+        "status",
     )
     list_filter = (
         "created_on",

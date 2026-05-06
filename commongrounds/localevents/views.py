@@ -1,5 +1,4 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.views.generic import DetailView, CreateView, UpdateView, ListView
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -54,7 +53,7 @@ class EventDetailView(DetailView):
         context["form"] = EventSignupForm()
         return context
     
-    #second tentative tthing
+    #second tentative tthing (idk yet)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         book = self.object
@@ -71,3 +70,60 @@ class EventDetailView(DetailView):
                 book=book, profile=user.profile).exists()
 
         return context
+    
+class EventCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
+    required_role = "Event Organizer"
+    model = Event
+    template_name = "event_create.html"
+    fields = [
+        "title",
+        "category",
+        "organizer",
+        "event_image",
+        "description",
+        "location",
+        "start_time",
+        "end_time",
+        "event_capacity",
+        "status",
+        "created_on",
+        "updated_on",
+    ]
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user.profile
+        return super().form_valid(form)
+
+class EventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
+    required_role = "Event Organizer"
+    model = Event
+    template_name = "event_update.html"
+    fields = [
+        "title",
+        "category",
+        "organizer",
+        "event_image",
+        "description",
+        "location",
+        "start_time",
+        "end_time",
+        "event_capacity",
+        "status",
+        "created_on",
+        "updated_on",
+    ]
+
+    def form_valid(self, form):
+        if form.instance.event_capacity >= 50: #tentative number, not sure where to get exact number
+            form.instance.status = "Full"
+        else:
+            form.instance.status = "Available"
+
+        return super().form_valid(form)
+    
+class EventSignUpForm():
+    model = EventSignup
+    #insert code
+
+class BaseSignUpView():
+    model = EventSignup

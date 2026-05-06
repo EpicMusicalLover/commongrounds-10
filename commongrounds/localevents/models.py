@@ -77,3 +77,4 @@ class EventSignup(models.Model):
         blank=True
         #set when registrant is not logged in (FOR EDITING)
     )
+
