@@ -3,16 +3,43 @@
 
 <h2>Commission List</h2>
 
-<ul>
-    {% for commission in commission_list %}
+{% if user.is_authenticated %}
+    <h3>Your Commissions</h3>
+    {% for commission in your_commissions %}
         <li>
             <a href="{% url 'commissions:commission-detail' commission.pk %}">
                 {{ commission.title }}
             </a>
         </li>
     {% empty %}
-        <p>No commissions.</p>
+        <p>You have no commissions.</p>
     {% endfor %}
-</ul>
+    <h3>Your Applications</h3>
+    {% for application in your_applications %}
+        <li>
+            <a href="{% url 'commissions:commission-detail' commission.pk %}">
+                {{ commission.title }}
+            </a>
+        </li>
+    {% empty %}
+        <p>You have no applications.</p>
+    {% endfor %}
+{% endif %}
+
+<h3>Other Commissions</h3>
+{% for commission in other_commissions %}
+    <li>
+        <a href="{% url 'commissions:commission-detail' commission.pk %}">
+            {{ commission.title }}
+        </a>
+    </li>
+{% empty %}
+    <p>There are no current commissions.</p>
+{% endfor %}
+
+<!-- <br><br>
+<a href="{% url 'commissions:commission-create' %}">
+    Create a Commission
+</a> -->
 
 {% endblock %}

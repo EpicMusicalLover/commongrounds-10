@@ -15,6 +15,9 @@ class CommissionListView(ListView):
             context["your_applications"] = JobApplication.objects.filter(
                 applicant=self.request.user.profile
             )
+            context["other_commissions"] = Commission.objects.exclude(
+                maker=self.request.user.profile
+            )
         else:
             context["other_commissions"] = Commission.objects.all()
         return context
@@ -23,3 +26,6 @@ class CommissionListView(ListView):
 class CommissionDetailView(DetailView):
     model = Commission
     template_name = "commission_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)

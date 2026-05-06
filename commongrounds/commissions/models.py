@@ -16,6 +16,8 @@ class Commission(models.Model):
     class CommissionStatus(models.TextChoices):
         is_open = 'A', 'Open'
         is_full = 'B', 'Full'
+        is_completed = 'C', 'Completed'
+        is_discontinued = 'D', 'Discontinued'
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -32,13 +34,13 @@ class Commission(models.Model):
     people_required = models.PositiveIntegerField()
     status = models.CharField(
         choices=CommissionStatus.choices,
-        default = CommissionStatus.is_open
+        default=CommissionStatus.is_open
     )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["created_on"]
+        ordering = ["status", "created_on"]
 
     def __str__(self):
         return self.title
@@ -53,12 +55,13 @@ class Job(models.Model):
         Commission,
         on_delete=models.CASCADE,
         null=True,
+        related_name='jobs_needed'
     )
     role = models.CharField(max_length=255)
     manpower_required = models.PositiveIntegerField()
     status = models.CharField(
         choices=JobStatus.choices,
-        default = JobStatus.is_open
+        default=JobStatus.is_open
     )
 
     class Meta:
@@ -86,7 +89,7 @@ class JobApplication(models.Model):
     )
     status = models.CharField(
         choices=JobApplicationStatus.choices,
-        default = JobApplicationStatus.is_pending
+        default=JobApplicationStatus.is_pending
     )
     applied_on = models.DateTimeField(auto_now_add=True)
 
