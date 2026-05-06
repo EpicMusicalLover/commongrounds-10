@@ -31,7 +31,11 @@
     {% endif %}
 
     <hr>
-    <a href="{% url 'bookclub:book_borrow' book.pk %}">Borrow this Book</a>
+    {% if book.available_to_borrow %}
+        <a href="{% url 'bookclub:book_borrow' book.pk %}" class="button">Borrow this Book</a>
+    {% else %}
+        <button disabled>Currently Unavailable for Borrowing</button>
+    {% endif %}
 
     <hr>
     <h3>Reviews</h3>
