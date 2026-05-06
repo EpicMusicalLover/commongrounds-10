@@ -32,6 +32,9 @@ class BookBorrowForm(forms.ModelForm):
     class Meta:
         model = Borrow
         fields = ['name', 'date_borrowed']
+        widgets = {
+            'date_borrowed': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 
 class BookFormFactory:
