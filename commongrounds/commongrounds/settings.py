@@ -44,13 +44,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "accounts",
     "bookclub",
     "commissions",
     # "localevents",
     "diyprojects",
-    "accounts",
     "merchstore.apps.MerchstoreConfig",
-    "accounts",
 ]
 
 MIDDLEWARE = [
