@@ -29,6 +29,12 @@
 <p>Sum of Manpower: {{ sum_of_manpower }}<br>
 Open Manpower: {{ open_manpower }}</p>
 
+{% if request.user.is_authenticated and commission.maker == request.user.profile %}
+    <a href="{% url 'commissions:commission-update' commission.pk %}">
+        Update Commission
+    </a>
+{% endif %}
+
 <br>
 <a href="{% url 'commissions:commission-list' %}">
     Back to Commission List

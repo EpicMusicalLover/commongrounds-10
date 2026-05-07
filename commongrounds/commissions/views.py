@@ -91,7 +91,6 @@ class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         if 'formset' not in context:
             context['formset'] = JobFormSet()
-        context['action'] = 'Create New Commission'
         return context
 
     def post(self, request, *args, **kwargs):
@@ -114,22 +113,31 @@ class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     required_role = "Commission Maker"
     model = Commission
     template_name = "commission_update.html"
-    fields = [
-        "title",
-        "description",
-        "commission_type",
-        "people_required",
-        "status",
-        ]
+    form_class = CommissionForm
     
+    def get_queryset(self):
+        return Commission.objects.filter(maker=self.request.user.profile)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.POST:
-            context['job'] = JobFormSet(self.request.POST)
-        else:
-            context['job'] = JobFormSet()
+        if 'formset' not in context:
+            context['formset'] = JobFormSet()
         return context
 
-    # def post(self, request, *args, **kwargs):
-    #     self.object = self.get_object()
-    #     form
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommissionForm(request.POST, instance=self.object)
+        formset = JobFormSet(request.POST, instance=self.object)
+
+        if form.is_valid() and formset.is_valid():
+            commission = form.save()
+            formset.save()
+
+            commission_jobs = commission.jobs.all()
+            if commission_jobs.exists() and all(job.status == "Full" for job in commission_jobs):
+                commission.status = "Full"
+                commission.save()
+            return redirect(commission.get_absolute_url())
+
+        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+    
