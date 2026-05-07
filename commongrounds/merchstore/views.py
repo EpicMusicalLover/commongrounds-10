@@ -12,9 +12,9 @@ from .strategies import AuthenticatedPurchaseStrategy, GuestPurchaseStrategy
 class ProductListView(ListView):
     model = Product
     template_name = "product_list.html"
-    user = self.request.user
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         if user.is_authenticated:
             context["your_products"] = Product.objects.filter(
                 owner=user.profile
@@ -119,8 +119,8 @@ class TransactionsListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = "transactions_list.html"
     context_object_name = "transactions"
-    user = self.request.user
     def get_queryset(self):
+        user = self.request.user
         return Transaction.objects.filter(
             product__owner=user.profile
         )
