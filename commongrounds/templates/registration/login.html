@@ -12,4 +12,9 @@
         <a href="{% url 'password_reset' %}">Forgot password?</a>
     </body>
 </html>
+
+<p>
+    Don't have an account yet?
+    <a href="{% url 'accounts:register' %}">Register here</a>
+</p>
 {% endblock %}

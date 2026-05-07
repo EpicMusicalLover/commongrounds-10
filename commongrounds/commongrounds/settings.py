@@ -45,11 +45,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "bookclub",
-    # "commissions",
+    "commissions",
     # "localevents",
     "diyprojects",
     "accounts",
     "merchstore.apps.MerchstoreConfig",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.clickjacking." "XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "commongrounds.urls"

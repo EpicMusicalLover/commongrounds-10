@@ -1,0 +1,42 @@
+{% block content %}
+<h1>Commission Requests</h1>
+
+<h2>Commission List</h2>
+
+{% if user.is_authenticated %}
+    <h3>Your Commissions</h3>
+    {% for commission in your_commissions %}
+        <li>
+            <a href="{% url 'commissions:commission-detail' commission.pk %}">
+                {{ commission.title }}
+            </a>
+        </li>
+    {% empty %}
+        <p>You have no commissions.</p>
+    {% endfor %}
+    <h3>Your Applications</h3>
+    {% for commission in your_applications %}
+        <li>
+            <a href="{% url 'commissions:commission-detail' commission.pk %}">
+                {{ commission.title }}
+            </a>
+        </li>
+    {% empty %}
+        <p>You have no applications.</p>
+    {% endfor %}
+{% endif %}
+
+<h3>Other Commissions</h3>
+{% for commission in other_commissions %}
+    <li>
+        <a href="{% url 'commissions:commission-detail' commission.pk %}">
+            {{ commission.title }}
+        </a>
+    </li>
+{% empty %}
+    <p>There are no current commissions.</p>
+{% endfor %}
+
+<br>
+<a href="{% url 'commissions:commission-create' %}">Create New Commission</a>
+{% endblock %}

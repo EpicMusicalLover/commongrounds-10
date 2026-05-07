@@ -1,0 +1,24 @@
+{% block content %}
+<h1>Commission Requests</h1>
+<h2>Commission Update</h2>
+
+<p>Maker: {{ request.user.username }}</p>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <br>
+    <h3>Job Creation</h3>
+    {{ formset.management_form }}
+    {% for job_form in formset %}
+        {{ job_form.as_p }}
+    {% endfor %}
+
+    <button type="submit">Update Commission</button>
+</form>
+
+<br>
+<a href="{% url 'commissions:commission-list' %}">
+    Back to Commission List
+</a>
+{% endblock %}

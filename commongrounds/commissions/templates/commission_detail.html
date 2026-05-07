@@ -1,0 +1,53 @@
+{% block content %}
+<h1>Commission Requests</h1>
+
+<h2>{{ commission.title }} Details</h2>
+
+<p><strong>Description:</strong> {{ commission.description }}</p>
+<p><strong>People Needed:</strong> {{ commission.people_required }}</p>
+<p><strong>Created On:</strong> {{ commission.created_on }}</p>
+<p><strong>Updated On:</strong> {{ commission.updated_on }}</p>
+
+<br>
+<strong>Jobs Required</strong> 
+{% for job in jobs %}
+    <li>{{ job }} | {{ job.manpower_required }} Manpower Required | Status: {{ job.status }}</li>
+
+    {% if request.user.is_authenticated %}
+        {% if commission.maker != request.user.profile %}
+            <form method="POST" action="{% url 'commissions:commission-detail' commission.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.pk }}">
+                <button type="submit" {% if job.not_full %}enabled{% else %}disabled{% endif %}>
+                    Apply to Job
+                </button>
+            </form>
+        {% endif %}
+    {% endif %}
+
+    {% if job.application.all %}
+    <ul>
+        {% for application in job.application.all %}
+        <li>{{ application.applicant }} | Applying for {{ application.job }} | Status: {{ application.status}}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No applications.</p>
+    {% endif %}
+
+{% endfor %}
+
+<p>Sum of Manpower: {{ sum_of_manpower }}<br>
+Open Manpower: {{ open_manpower }}</p>
+
+{% if request.user.is_authenticated and commission.maker == request.user.profile %}
+    <a href="{% url 'commissions:commission-update' commission.pk %}">
+        Update Commission
+    </a>
+{% endif %}
+
+<br>
+<a href="{% url 'commissions:commission-list' %}">
+    Back to Commission List
+</a>
+{% endblock %}
