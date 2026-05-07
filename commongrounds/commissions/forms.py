@@ -24,8 +24,10 @@ class JobForm(forms.ModelForm):
             "status",
         ]
 
+
 JobFormSet = inlineformset_factory(Commission, Job, fields=['role', 'manpower_required'],
                                    extra=2)
+
 
 class JobApplicationForm(forms.ModelForm):
     class Meta:

@@ -77,8 +77,9 @@ class Job(models.Model):
     def accepted_amount(self):
         return self.application.filter(status="Accepted").count()
     
-    def job_full(self):
-        return self.accepted_amount() >= self.manpower_required
+    def not_full(self):
+        if self.accepted_amount() < self.manpower_required:
+            return True
 
 
 class JobApplication(models.Model):
@@ -87,16 +88,16 @@ class JobApplication(models.Model):
         is_accepted = 'Accepted', 'Accepted'
         is_rejected = 'Rejected', 'Rejected'
 
-    applicant = models.ForeignKey(
-        'accounts.Profile',
-        on_delete=models.CASCADE,
-        null=True,
-    )
     job = models.ForeignKey(
         Job,
         on_delete=models.CASCADE,
         null=True,
         related_name="application"
+    )
+    applicant = models.ForeignKey(
+        'accounts.Profile',
+        on_delete=models.CASCADE,
+        null=True,
     )
     status = models.CharField(
         choices=JobApplicationStatus.choices,

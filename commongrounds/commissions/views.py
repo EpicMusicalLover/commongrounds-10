@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Commission, Job, JobApplication
-from .forms import CommissionForm, JobForm, JobFormSet, JobApplicationForm
+from .forms import CommissionForm, JobApplicationForm, JobFormSet
 
 
 class CommissionListView(ListView):
@@ -38,24 +38,16 @@ class CommissionDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        sum_of_manpower = 0
-        accepted = 0
-        open_manpower = 0
-        commission_pk = self.kwargs['pk']
-        for jobs in Job.objects.filter(commission=Commission.objects.get(pk=commission_pk)):
-            sum_of_manpower += jobs.manpower_required
-            for signee in JobApplication.objects.filter(job=jobs):
-                if signee.status == "Accepted":
-                    accepted += 1
-
-        open_manpower = sum_of_manpower - accepted
-
-        context["sum_of_manpower"] = sum_of_manpower
-        context["open_manpower"] = open_manpower
-
         jobs = self.object.jobs.all()
+
+        sum_of_manpower = sum(job.manpower_required for job in jobs)
+        accepted = sum(
+            job.application.filter(status="Accepted").count() for job in jobs
+        )
+
         context['jobs'] = jobs
+        context["sum_of_manpower"] = sum_of_manpower
+        context["open_manpower"] = sum_of_manpower - accepted
 
         if 'application_form' not in context:
             context["application_form"] = JobApplicationForm()
@@ -64,6 +56,9 @@ class CommissionDetailView(DetailView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+
+        if not request.user.is_authenticated:
+            return redirect('accounts:register')
         
         if request.user.profile == self.object.maker:
             return self.render_to_response(self.get_context_data())
@@ -74,10 +69,10 @@ class CommissionDetailView(DetailView):
         except Job.DoesNotExist:
             return self.render_to_response(self.get_context_data())
         
-        if not job.job_full():
+        if job.not_full():
             JobApplication.objects.get_or_create(
+                applicant=request.user.profile,
                 job=job,
-                applicant=request.user.profile
             )
         return redirect(self.object.get_absolute_url())
 
