@@ -19,7 +19,7 @@ class JobAdmin(admin.ModelAdmin):
     ordering = ("status",)
 
 class JobApplicationAdmin(admin.ModelAdmin):
-    list_display = ("applicant", "status",)
+    list_display = ("applicant", "job", "status",)
     search_fields = ("applicant",)
     ordering = ("status",)
 

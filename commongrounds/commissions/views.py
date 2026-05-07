@@ -23,6 +23,8 @@ class CommissionListView(ListView):
                 jobs__application__applicant=self.request.user.profile
             )
             context["other_commissions"] = Commission.objects.exclude(
+                jobs__application__applicant=self.request.user.profile
+            ).exclude(
                 maker=self.request.user.profile
             )
         else:
@@ -55,23 +57,22 @@ class CommissionDetailView(DetailView):
         jobs = self.object.jobs.all()
         context['jobs'] = jobs
 
-        if (
-            self.request.user.is_authenticated
-            and open_manpower > 0
-            ):
-            context["form"] = JobApplicationForm()
+        if 'application_form' not in context:
+            context["application_form"] = JobApplicationForm()
 
         return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        
+        if request.user.profile == self.object.maker:
+            return self.render_to_response(self.get_context_data())
 
-        if request.user.is_authenticated:
-            job_id = request.POST.get('job_id')
-            try:
-                job = self.object.jobs.get(pk=job_id)
-            except Job.DoesNotExist:
-                return self.render_to_response(self.get_context_data())
+        job_id = request.POST.get('job_id')
+        try:
+            job = self.object.jobs.get(pk=job_id)
+        except Job.DoesNotExist:
+            return self.render_to_response(self.get_context_data())
         
         if not job.job_full():
             JobApplication.objects.get_or_create(
