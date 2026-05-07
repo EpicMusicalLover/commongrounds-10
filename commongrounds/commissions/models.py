@@ -45,7 +45,7 @@ class Commission(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     def get_absolute_url(self):
         return reverse('commissions:commission-detail', args=[str(self.pk)])
 
@@ -73,10 +73,10 @@ class Job(models.Model):
 
     def __str__(self):
         return self.role
-    
+
     def accepted_amount(self):
         return self.application.filter(status="Accepted").count()
-    
+
     def not_full(self):
         if self.accepted_amount() < self.manpower_required:
             return True

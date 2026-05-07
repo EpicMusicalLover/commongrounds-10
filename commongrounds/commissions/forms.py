@@ -7,13 +7,14 @@ class CommissionForm(forms.ModelForm):
     class Meta:
         model = Commission
         fields = [
-        "title",
-        "description",
-        "commission_type",
-        "people_required",
-        "status",
+            "title",
+            "description",
+            "commission_type",
+            "people_required",
+            "status",
         ]
-        widget = { "status": forms.Select() }
+        widget = {"status": forms.Select()}
+
 
 class JobForm(forms.ModelForm):
     class Meta:
@@ -25,8 +26,9 @@ class JobForm(forms.ModelForm):
         ]
 
 
-JobFormSet = inlineformset_factory(Commission, Job, fields=['role', 'manpower_required'],
-                                   extra=2)
+JobFormSet = inlineformset_factory(
+    Commission, Job, fields=['role', 'manpower_required'], extra=2
+    )
 
 
 class JobApplicationForm(forms.ModelForm):

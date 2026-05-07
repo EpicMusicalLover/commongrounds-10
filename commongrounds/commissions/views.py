@@ -1,7 +1,5 @@
 from django.views.generic import DetailView, CreateView, UpdateView, ListView
-from django.forms import inlineformset_factory
-from django.urls import reverse_lazy
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Commission, Job, JobApplication
@@ -15,7 +13,6 @@ class CommissionListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            user = self.request.user.profile
             context["your_commissions"] = Commission.objects.filter(
                 maker=self.request.user.profile
             )
@@ -59,7 +56,7 @@ class CommissionDetailView(DetailView):
 
         if not request.user.is_authenticated:
             return redirect('accounts:register')
-        
+
         if request.user.profile == self.object.maker:
             return self.render_to_response(self.get_context_data())
 
@@ -68,7 +65,7 @@ class CommissionDetailView(DetailView):
             job = self.object.jobs.get(pk=job_id)
         except Job.DoesNotExist:
             return self.render_to_response(self.get_context_data())
-        
+
         if job.not_full():
             JobApplication.objects.get_or_create(
                 applicant=request.user.profile,
@@ -82,7 +79,7 @@ class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Commission
     template_name = "commission_create.html"
     form_class = CommissionForm
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if 'formset' not in context:
@@ -102,7 +99,9 @@ class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
             formset.save()
             return redirect(commission.get_absolute_url())
 
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset)
+            )
 
 
 class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
@@ -110,7 +109,7 @@ class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     model = Commission
     template_name = "commission_update.html"
     form_class = CommissionForm
-    
+
     def get_queryset(self):
         return Commission.objects.filter(maker=self.request.user.profile)
 
@@ -130,10 +129,13 @@ class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
             formset.save()
 
             commission_jobs = commission.jobs.all()
-            if commission_jobs.exists() and all(job.status == "Full" for job in commission_jobs):
+            if commission_jobs.exists() and all(
+                    job.status == "Full" for job in commission_jobs):
                 commission.status = "Full"
                 commission.save()
+
             return redirect(commission.get_absolute_url())
 
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
-    
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset)
+            )
