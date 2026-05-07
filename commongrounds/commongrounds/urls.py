@@ -27,9 +27,9 @@ urlpatterns = [
     path("diyprojects/", include("diyprojects.urls")),
     path("merchstore/", include("merchstore.urls", namespace="merchstore")),
     path("commissions/", include("commissions.urls", namespace="commissions")),
+    path("localevents/", include("localevents.urls", namespace="localevents")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("accounts.urls")),
     path("admin/", admin.site.urls),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

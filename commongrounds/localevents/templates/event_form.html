@@ -1,0 +1,12 @@
+
+{% block content %}
+<h1>Local Events</h1>
+<h2>Create Event</h2>
+
+<p>Organizer: {{ request.user.username }}</p>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Event</button>
+</form>
+{% endblock %}

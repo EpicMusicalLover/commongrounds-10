@@ -47,9 +47,10 @@ INSTALLED_APPS = [
     "accounts",
     "bookclub",
     "commissions",
-    # "localevents",
     "diyprojects",
     "merchstore.apps.MerchstoreConfig",
+    "localevents.apps.LocaleventsConfig",
+    "accounts",
 ]
 
 MIDDLEWARE = [

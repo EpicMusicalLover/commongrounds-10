@@ -1,4 +1,5 @@
 from django import forms
+<<<<<<< HEAD:commongrounds/commissions/forms.py
 from django.forms import inlineformset_factory
 from .models import Commission, Job, JobApplication
 
@@ -35,3 +36,8 @@ class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
         fields = []
+=======
+from .models import Event, EventSignup
+
+
+>>>>>>> origin/LocalEvents:commongrounds/localevents/forms.py
