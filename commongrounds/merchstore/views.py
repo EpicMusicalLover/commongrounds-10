@@ -12,19 +12,19 @@ from .strategies import AuthenticatedPurchaseStrategy, GuestPurchaseStrategy
 class ProductListView(ListView):
     model = Product
     template_name = "product_list.html"
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     if self.request.user.is_authenticated:
-    #         context["your_products"] = Product.objects.filter(
-    #             owner=self.request.user.profile
-    #         )
-    #         context["other_products"] = Product.objects.exclude(
-    #             owner=self.request.user.profile
-    #         )
-    #     else:
-    #         context["other_products"] = Product.objects.all()
-    #     return context
+    user = self.request.user
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if user.is_authenticated:
+            context["your_products"] = Product.objects.filter(
+                owner=user.profile
+            )
+            context["other_products"] = Product.objects.exclude(
+                owner=user.profile
+            )
+        else:
+            context["other_products"] = Product.objects.all()
+        return context
 
 
 class ProductDetailView(DetailView):
@@ -39,14 +39,15 @@ class ProductDetailView(DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         product = self.object
+        user = request.user
         if (
-            request.user.is_authenticated
-            and product.owner == request.user.profile
+            user.is_authenticated
+            and product.owner == user.profile
         ):
             return redirect("merchstore:product-detail", pk=product.pk)
         form = TransactionForm(request.POST)
         if form.is_valid():
-            if request.user.is_authenticated:
+            if user.is_authenticated:
                 strategy = AuthenticatedPurchaseStrategy()
             else:
                 strategy = GuestPurchaseStrategy()
@@ -69,7 +70,9 @@ class ProductCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     ]
 
     def form_valid(self, form):
-        form.instance.owner = self.request.user.profile
+        user = self.request.user
+        if user.is_authenticated:
+            form.instance.owner = user.profile
         return super().form_valid(form)
 
 
@@ -98,8 +101,9 @@ class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
 @login_required
 def cart_view(request):
+    user = request.user
     transactions = Transaction.objects.filter(
-        buyer=request.user.profile,
+        buyer=user.profile,
     )
     transactions_group = {}
     for t in transactions:
@@ -115,10 +119,10 @@ class TransactionsListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = "transactions_list.html"
     context_object_name = "transactions"
-
+    user = self.request.user
     def get_queryset(self):
         return Transaction.objects.filter(
-            product__owner=self.request.user.profile
+            product__owner=user.profile
         )
 
     def get_context_data(self, **kwargs):
