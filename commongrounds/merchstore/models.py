@@ -25,6 +25,7 @@ class Product(models.Model):
     owner = models.ForeignKey(
         "accounts.Profile",
         on_delete=models.CASCADE,
+        null=True,
     )
     product_image = models.ImageField(
         upload_to="images/",

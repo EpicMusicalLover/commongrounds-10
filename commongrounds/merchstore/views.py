@@ -12,15 +12,18 @@ from .strategies import AuthenticatedPurchaseStrategy, GuestPurchaseStrategy
 class ProductListView(ListView):
     model = Product
     template_name = "product_list.html"
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        context["your_products"] = Product.objects.none()
-        context["other_products"] = Product.objects.all()
-        if user.is_authenticated and hasattr(user, "profile"):
-            profile = getattr(user, "profile", None)
-            context["your_products"] = Product.objects.filter(owner_id=profile.pk)
-            context["other_products"] = Product.objects.exclude(owner_id=profile.pk)
+    def get_context_data(self, **kwargs): 
+        context = super().get_context_data(**kwargs) 
+        user = self.request.user 
+        if user.is_authenticated: 
+            context["your_products"] = Product.objects.filter( 
+                owner=user.profile
+            ) 
+            context["other_products"] = Product.objects.exclude( 
+                owner=user.profile
+            )
+        else: 
+            context["other_products"] = Product.objects.all() 
         return context
 
 
