@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Event, EventType
+from .models import Event, EventType, EventSignup
 
-
+@admin.register(EventType)
 class EventTypeAdmin(admin.ModelAdmin):
     list_display = (
         "name",
@@ -10,7 +10,7 @@ class EventTypeAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     ordering = ("name",)
 
-
+@admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = (
         "title",
@@ -34,6 +34,6 @@ class EventAdmin(admin.ModelAdmin):
     )
     ordering = ("-created_on",)
 
-
-admin.site.register(EventType, EventTypeAdmin)
-admin.site.register(Event, EventAdmin)
+@admin.register(EventSignup)
+class EventSignupAdmin(admin.ModelAdmin):
+    list_display = ('event', 'user_registrant', 'new_registrant')
