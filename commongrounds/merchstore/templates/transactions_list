@@ -1,0 +1,18 @@
+{% block content %}
+<h1>Merchandise Store</h1>
+<h2>Transactions List</h2>
+
+{% for buyer, transactions in grouped_transactions.items %}
+    <h3>Buyer: {{ buyer.display_name }}</h3>
+    {% for t in transactions %}
+        <div>
+            <p><strong>Product:</strong> {{ t.product.name }}</p>
+            <p><strong>Amount:</strong> {{ t.amount }}</p>
+            <p><strong>Status:</strong> {{ t.status }}</p>
+            <p><strong>Date:</strong> {{ t.created_on }}</p>
+        </div>
+    {% endfor %}
+{% empty %}
+    <p>No transactions found.</p>
+{% endfor %}
+{% endblock %}

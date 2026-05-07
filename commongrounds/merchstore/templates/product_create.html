@@ -1,0 +1,11 @@
+{% block content %}
+<h1>Merchandise Store</h1>
+<h2>Create Product</h2>
+
+<p>Owner: {{ request.user.username }}</p>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Product</button>
+</form>
+{% endblock %}

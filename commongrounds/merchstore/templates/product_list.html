@@ -3,14 +3,25 @@
 
 <h2>Product List</h2>
 
-<ul>
-    {% for product in product_list %}
-        <li>
-            <a href="{% url 'merchstore:product-detail' product.pk %}">{{ product.name }}</a>
-            - ₱{{ product.price }}
-        </li>
+{% if user.is_authenticated %}
+    <h3>Your Products</h3>
+    {% for p in your_products %}
+        <li><a href="{% url 'merchstore:product-detail' p.pk %}">{{ p.name }}</a> - ₱{{ p.price }}</li>
     {% empty %}
-        <li>No products are available. Please add products.</li>
+        <p>You have no products.</p>
     {% endfor %}
-</ul>
+{% endif %}
+
+<h3>All Products</h3>
+{% for p in other_products %}
+    <li><a href="{% url 'merchstore:product-detail' p.pk %}">{{ p.name }}</a> - ₱{{ p.price }}</li>
+{% empty %}
+    <p>No products available.</p>
+{% endfor %}
+
+<br>
+<br>
+<a href="{% url 'merchstore:product-create' %}">
+    Add Product
+</a>
 {% endblock %}

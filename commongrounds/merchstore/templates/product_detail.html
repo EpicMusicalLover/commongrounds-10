@@ -2,11 +2,25 @@
 {% block content %}
 <h1>Merchandise Store</h1>
 
-<h2>{{ product.name }}</h2>
+<h2>{{ object.name }}</h2>
+<img src="{{ object.product_image.url }}">
+<p>{{ object.description }}</p>
+<p><strong>Price:</strong> {{ object.price }}</p>
+<p><strong>Stock:</strong> {{ object.stock }}</p>
 
-<p><strong>Type:</strong> {{ product.product_type }}</p>
-<p><strong>Price:</strong> ₱{{ product.price }}</p>
-<p><strong>Description:</strong> {{ product.description }}</p>
+{% if user.is_authenticated and object.owner == user.profile %}
+    <a href="{% url 'merchstore:product-update' object.pk %}">
+        Edit Product
+    </a>
+{% endif %}
 
-<a href="{% url 'merchstore:product-list' %}">Back to the Product List</a>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if object.stock == 0 %}
+        <button type="submit" disabled>Out of Stock</button>
+    {% else %}
+        <button type="submit">Buy</button>
+    {% endif %}
+</form>
 {% endblock %}

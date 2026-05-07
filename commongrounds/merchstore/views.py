@@ -1,16 +1,136 @@
-from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
-from .models import Product
+from django.views.generic import DetailView, CreateView, UpdateView, ListView
+from accounts.mixins import RoleRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+# from accounts.decorators import role_required
+from .models import Transaction, Product
+from .forms import TransactionForm
+from .strategies import AuthenticatedPurchaseStrategy, GuestPurchaseStrategy
 
 
 class ProductListView(ListView):
     model = Product
     template_name = "product_list.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["your_products"] = Product.objects.filter(
+                owner=self.request.user.profile
+            )
+            context["other_products"] = Product.objects.exclude(
+                owner=self.request.user.profile
+            )
+        else:
+            context["other_products"] = Product.objects.all()
+        return context
+
 
 class ProductDetailView(DetailView):
     model = Product
     template_name = "product_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = TransactionForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        product = self.object
+        if (
+            request.user.is_authenticated
+            and product.owner == request.user.profile
+        ):
+            return redirect("merchstore:product-detail", pk=product.pk)
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            if request.user.is_authenticated:
+                strategy = AuthenticatedPurchaseStrategy()
+            else:
+                strategy = GuestPurchaseStrategy()
+            return strategy.execute(request, product, form)
+        return self.get(request, *args, **kwargs)
+
+
+class ProductCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
+    required_role = "Market Seller"
+    model = Product
+    template_name = "product_create.html"
+    fields = [
+        "name",
+        "product_type",
+        "product_image",
+        "description",
+        "price",
+        "stock",
+        "status",
+    ]
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user.profile
+        return super().form_valid(form)
+
+
+class ProductUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
+    required_role = "Market Seller"
+    model = Product
+    template_name = "product_update.html"
+    fields = [
+        "name",
+        "product_type",
+        "product_image",
+        "description",
+        "price",
+        "stock",
+        "status",
+    ]
+
+    def form_valid(self, form):
+        if form.instance.stock == 0:
+            form.instance.status = "out_of_stock"
+        else:
+            form.instance.status = "available"
+
+        return super().form_valid(form)
+
+
+@login_required
+def cart_view(request):
+    transactions = Transaction.objects.filter(
+        buyer=request.user.profile,
+    )
+    transactions_group = {}
+    for t in transactions:
+        owner = t.product.owner
+        if owner not in transactions_group:
+            transactions_group[owner] = []
+        transactions_group[owner].append(t)
+
+    return render(request, "cart.html", {"transactions": transactions_group})
+
+
+class TransactionsListView(LoginRequiredMixin, ListView):
+    model = Transaction
+    template_name = "transactions_list.html"
+    context_object_name = "transactions"
+
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            product__owner=self.request.user.profile
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grouped = {}
+        for t in context["transactions"]:
+            buyer = t.buyer
+            if buyer not in grouped:
+                grouped[buyer] = []
+            grouped[buyer].append(t)
+        context["transactions_group"] = grouped
+        return context
 
 
 # Create your views here.
