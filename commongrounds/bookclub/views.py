@@ -29,8 +29,6 @@ class BookListView(ListView):
 
             user_book_ids = contributed_ids + bookmarked_ids + reviewed_ids
 
-            context['all_books'] = all_books.exclude(pk__in=user_book_ids)
-
             context['contributed_books'] = contributed
             context['bookmarked_books'] = bookmarked
             context['reviewed_books'] = reviewed
