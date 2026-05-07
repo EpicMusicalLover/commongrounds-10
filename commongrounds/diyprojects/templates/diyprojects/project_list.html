@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>DIY Projects List</h2>
+
+{% if user.profile.role == "Project Creator" %}
+    <p><a href="{% url 'diyprojects:project_create' %}">Add Project</a></p>
+{% endif %}
+
+{% if user.is_authenticated %}
+    <h3>Projects Created</h3>
+    {% if my_projects %}
+        <ul>
+        {% for p in my_projects %}
+            <li>
+                <strong>{{ p.title }}</strong><br>
+                Category: {{ p.category.name }}<br>
+                {{ p.description|truncatewords:10 }}<br>
+                <a href="{{ p.get_absolute_url }}">View Details</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No projects created.</p>
+    {% endif %}
+
+    <h3>Projects Reviewed</h3>
+    {% if reviewed_projects %}
+        <ul>
+        {% for p in reviewed_projects %}
+            <li>
+                <strong>{{ p.title }}</strong><br>
+                Category: {{ p.category.name }}<br>
+                {{ p.description|truncatewords:10 }}<br>
+                <a href="{{ p.get_absolute_url }}">View Details</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reviewed projects.</p>
+    {% endif %}
+
+    <h3>Favorite Projects</h3>
+    {% if favorited_projects %}
+        <ul>
+        {% for p in favorited_projects %}
+            <li>
+                <strong>{{ p.title }}</strong><br>
+                Category: {{ p.category.name }}<br>
+                {{ p.description|truncatewords:10 }}<br>
+                <a href="{{ p.get_absolute_url }}">View Details</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No favorite projects.</p>
+    {% endif %}
+{% endif %}
+
+<h3>All Projects</h3>
+{% if all_projects %}
+    <ul>
+        {% for p in all_projects %}
+            <li>
+                <strong>{{ p.title }}</strong><br>
+                Category: {{ p.category.name }}<br>
+                {{ p.description|truncatewords:10 }}<br>
+                <a href="{{ p.get_absolute_url }}">View Details</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No new projects available.</p>
+{% endif %}
+
+{% endblock %}

@@ -6,7 +6,10 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/diyprojects
     initial = True
 
     dependencies = [
