@@ -10,15 +10,26 @@
 
 <br>
 <strong>Jobs Required</strong> 
-{% for job in commission.jobs.all %}
-    <li>{{ job }}</li>
+{% for job in jobs %}
+    <li>{{ job }} | {{ job.manpower_required }} Manpower Required | Status: {{ job.status }}</li>
+
+    {% if request.user.is_authenticated %}
+        {% if commission.maker != request.user.profile %}
+            <form method="POST" action="{% url 'commissions:commission-detail' commission.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.pk }}">
+                <button type="submit" {% if job.job_full %}disabled{% endif %}>
+                    Apply to Job
+                </button>
+            </form>
+        {% endif %}
+    {% endif %}
 {% endfor %}
 
-<br>
-<p>Sum of Manpower: {{ sum_of_manpower }}</p>
-<p>Open Manpower: {{ open_manpower }}</p>
+<p>Sum of Manpower: {{ sum_of_manpower }}<br>
+Open Manpower: {{ open_manpower }}</p>
 
-<br><br>
+<br>
 <a href="{% url 'commissions:commission-list' %}">
     Back to Commission List
 </a>

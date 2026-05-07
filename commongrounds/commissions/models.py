@@ -73,6 +73,12 @@ class Job(models.Model):
 
     def __str__(self):
         return self.role
+    
+    def accepted_amount(self):
+        return self.application.filter(status="Accepted").count()
+    
+    def job_full(self):
+        return self.accepted_amount() >= self.manpower_required
 
 
 class JobApplication(models.Model):

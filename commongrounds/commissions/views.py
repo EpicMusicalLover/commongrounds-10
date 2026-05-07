@@ -1,10 +1,11 @@
 from django.views.generic import DetailView, CreateView, UpdateView, ListView
 from django.forms import inlineformset_factory
 from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Commission, Job, JobApplication
-from .forms import JobFormSet
+from .forms import JobFormSet, JobApplicationForm
 
 
 class CommissionListView(ListView):
@@ -50,7 +51,34 @@ class CommissionDetailView(DetailView):
 
         context["sum_of_manpower"] = sum_of_manpower
         context["open_manpower"] = open_manpower
+
+        jobs = self.object.jobs.all()
+        context['jobs'] = jobs
+
+        if (
+            self.request.user.is_authenticated
+            and open_manpower > 0
+            ):
+            context["form"] = JobApplicationForm()
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if request.user.is_authenticated:
+            job_id = request.POST.get('job_id')
+            try:
+                job = self.object.jobs.get(pk=job_id)
+            except Job.DoesNotExist:
+                return self.render_to_response(self.get_context_data())
+        
+        if not job.job_full():
+            JobApplication.objects.get_or_create(
+                job=job,
+                applicant=request.user.profile
+            )
+        return redirect(self.object.get_absolute_url())
 
 
 class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
@@ -84,3 +112,24 @@ class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
             return super().form_valid(form)
         else:
             return self.render_to_response(self.get_context_data(form=form))
+
+
+class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
+    required_role = "Commission Maker"
+    model = Commission
+    template_name = "commission_update.html"
+    fields = [
+        "title",
+        "description",
+        "commission_type",
+        "people_required",
+        "status",
+    ]
+
+    def form_valid(self, form):
+        if form.instance.stock == 0:
+            form.instance.status = "out_of_stock"
+        else:
+            form.instance.status = "available"
+
+        return super().form_valid(form)
