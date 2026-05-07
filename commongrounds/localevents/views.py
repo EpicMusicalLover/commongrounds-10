@@ -1,13 +1,8 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-# from accounts.decorators import role_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .models import EventSignup, Event
-from .forms import EventSignupForm
-
-# from .strategies import AuthenticatedPurchaseStrategy, GuestPurchaseStrategy
 
 
 class EventListView(ListView):
@@ -45,31 +40,7 @@ class EventListView(ListView):
 
 class EventDetailView(DetailView):
     model = Event
-    template_name = "event_detail.html"
-
-    #tentatatatatatatatatatative
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = EventSignupForm()
-        return context
-    
-    #second tentative tthing (idk yet)
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        book = self.object
-        user = self.request.user
-
-        ReviewForm = BookFormFactory.get_form("review", user=self.request.user)
-        context['review_form'] = ReviewForm()
-        context['reviews'] = BookReview.objects.filter(book=book)
-        context['bookmark_count'] = Bookmark.objects.filter(book=book).count()
-
-        if user.is_authenticated:
-            context['is_contributor'] = (book.contributor == user.profile)
-            context['is_bookmarked'] = Bookmark.objects.filter(
-                book=book, profile=user.profile).exists()
-
-        return context
+    template_name = 'event_detail.html'
     
 class EventCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     required_role = "Event Organizer"
@@ -91,7 +62,7 @@ class EventCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     ]
 
     def form_valid(self, form):
-        form.instance.owner = self.request.user.profile
+        form.instance.organizer = self.request.user.profile
         return super().form_valid(form)
 
 class EventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
@@ -114,10 +85,12 @@ class EventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     ]
 
     def form_valid(self, form):
-        if form.instance.event_capacity >= 50: #tentative number, not sure where to get exact number
-            form.instance.status = "Full"
+        event = form.save(commit=False)
+        signup_count = event.eventsignup_set.count()
+        if signup_count >= event.event_capacity:
+            event.status = "Full"
         else:
-            form.instance.status = "Available"
+            event.status = "Available"
 
         return super().form_valid(form)
     
@@ -127,3 +100,4 @@ class EventSignUpForm():
 
 class BaseSignUpView():
     model = EventSignup
+    #yeah this needs code pa
