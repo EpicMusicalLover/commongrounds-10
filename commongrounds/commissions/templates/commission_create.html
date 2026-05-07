@@ -3,17 +3,22 @@
 <h2>Commission Creation</h2>
 
 <p>Maker: {{ request.user.username }}</p>
-<form method="post" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
 
     <br>
     <h3>Job Creation</h3>
-    {{ job.management_form }}
-    {% for job in job %}
-        {{ job.as_p }}
+    {{ formset.management_form }}
+    {% for job_form in formset %}
+        {{ job_form.as_p }}
     {% endfor %}
 
-    <button type="submit">Create Commission</button>
+    <button type="submit">{{ action }}</button>
 </form>
+
+<br>
+<a href="{% url 'commissions:commission-list' %}">
+    Back to Commission List
+</a>
 {% endblock %}

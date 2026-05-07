@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Commission, Job, JobApplication
-from .forms import JobFormSet, JobApplicationForm
+from .forms import CommissionForm, JobForm, JobFormSet, JobApplicationForm
 
 
 class CommissionListView(ListView):
@@ -85,6 +85,35 @@ class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     required_role = "Commission Maker"
     model = Commission
     template_name = "commission_create.html"
+    form_class = CommissionForm
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'formset' not in context:
+            context['formset'] = JobFormSet()
+        context['action'] = 'Create New Commission'
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form = CommissionForm(request.POST)
+        formset = JobFormSet(request.POST)
+
+        if form.is_valid() and formset.is_valid():
+            commission = form.save(commit=False)
+            commission.maker = request.user.profile
+            commission.save()
+            formset.instance = commission
+            formset.save()
+            return redirect(commission.get_absolute_url())
+
+        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
+
+class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
+    required_role = "Commission Maker"
+    model = Commission
+    template_name = "commission_update.html"
     fields = [
         "title",
         "description",
@@ -101,35 +130,6 @@ class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
             context['job'] = JobFormSet()
         return context
 
-    def form_valid(self, form):
-        form.instance.owner = self.request.user.profile
-        context = self.get_context_data()
-        formset = context['job']
-        if formset.is_valid():
-            self.object = form.save()
-            formset.instance = self.object
-            formset.save()
-            return super().form_valid(form)
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
-
-
-class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
-    required_role = "Commission Maker"
-    model = Commission
-    template_name = "commission_update.html"
-    fields = [
-        "title",
-        "description",
-        "commission_type",
-        "people_required",
-        "status",
-    ]
-
-    def form_valid(self, form):
-        if form.instance.stock == 0:
-            form.instance.status = "out_of_stock"
-        else:
-            form.instance.status = "available"
-
-        return super().form_valid(form)
+    # def post(self, request, *args, **kwargs):
+    #     self.object = self.get_object()
+    #     form
