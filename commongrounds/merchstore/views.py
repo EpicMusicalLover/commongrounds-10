@@ -15,13 +15,12 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        context["your_products"] = Product.objects.none()
         context["other_products"] = Product.objects.all()
         if user.is_authenticated:
             profile = getattr(user, "profile", None)
-
-            if profile:
-                context["your_products"] = Product.objects.filter(owner=profile)
-                context["other_products"] = Product.objects.exclude(owner=profile)
+            context["your_products"] = Product.objects.filter(owner=profile)
+            context["other_products"] = Product.objects.exclude(owner=profile)
         return context
 
 
