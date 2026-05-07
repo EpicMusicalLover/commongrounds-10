@@ -29,8 +29,8 @@ class Product(models.Model):
     )
     product_image = models.ImageField(
         upload_to="images/",
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
     )
     description = models.TextField()
     price = models.DecimalField(
