@@ -4,10 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/diyprojects
     dependencies = [
         ("accounts", "0001_initial"),
     ]

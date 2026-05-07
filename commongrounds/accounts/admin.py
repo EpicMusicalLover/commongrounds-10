@@ -1,8 +1,4 @@
 from django.contrib import admin
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/diyprojects
 from .models import Profile
 
 
