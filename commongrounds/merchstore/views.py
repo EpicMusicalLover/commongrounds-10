@@ -13,18 +13,18 @@ class ProductListView(ListView):
     model = Product
     template_name = "product_list.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context["your_products"] = Product.objects.filter(
-                owner=self.request.user.profile
-            )
-            context["other_products"] = Product.objects.exclude(
-                owner=self.request.user.profile
-            )
-        else:
-            context["other_products"] = Product.objects.all()
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     if self.request.user.is_authenticated:
+    #         context["your_products"] = Product.objects.filter(
+    #             owner=self.request.user.profile
+    #         )
+    #         context["other_products"] = Product.objects.exclude(
+    #             owner=self.request.user.profile
+    #         )
+    #     else:
+    #         context["other_products"] = Product.objects.all()
+    #     return context
 
 
 class ProductDetailView(DetailView):
