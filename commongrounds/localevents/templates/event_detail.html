@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+
 {% block content %}
     <h1>Local Events</h1>
     
@@ -8,6 +10,35 @@
     <p>Location: {{ event.location }}</p>
     <p>Start Time: {{ event.start_time }}</p>
     <p>End Time: {{ event.end_time }}</p>
+    <p>Status: {{ event.status }}</p> 
+    <p>Capacity: {{ event.eventsignup_set.count }} / {{ event.event_capacity }}</p>
+
+    <hr>
+
+    {% if request.user.is_authenticated %}
+        {% if request.user.profile not in event.organizer.all %}
+            {% if event.eventsignup_set.count >= event.event_capacity %}
+                <button disabled>Full</button> 
+            {% else %}
+                <form action="{% url 'localevents:event-signup' event.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Sign Up</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% if event.eventsignup_set.count < event.event_capacity %}
+            <a href="{% url 'localevents:event-signup' event.pk %}">Sign Up as Guest</a>
+        {% else %}
+            <button disabled>Full</button>
+        {% endif %}
+    {% endif %}
+
+    {% if request.user.is_authenticated and request.user.profile in event.organizer.all %}
+        <p><a href="{% url 'localevents:event-update' event.pk %}">Edit this Event</a></p>
+    {% endif %}
+
+    <hr>
 
     <a href="{% url 'localevents:event-list' %}">Back to the Event List</a>
 {% endblock %}
