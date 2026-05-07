@@ -19,7 +19,7 @@ class EventListView(ListView):
             profile = user.profile
 
             events_created = all_events.filter(organizer=profile)
-            events_signedup = all_events.filter(event_signup__user_profile=profile)
+            events_signedup = all_events.filter(eventsignup__user_registrant=profile)
 
             events_created_ids = [event.pk for event in events_created]
             events_signedup_ids = [event.pk for event in events_signedup]
@@ -42,14 +42,13 @@ class EventDetailView(DetailView):
     model = Event
     template_name = 'event_detail.html'
     
-class EventCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
+class EventCreateView(LoginRequiredMixin, CreateView):
     required_role = "Event Organizer"
     model = Event
-    template_name = "event_create.html"
+    template_name = "event_form.html"
     fields = [
         "title",
         "category",
-        "organizer",
         "event_image",
         "description",
         "location",
@@ -57,22 +56,20 @@ class EventCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
         "end_time",
         "event_capacity",
         "status",
-        "created_on",
-        "updated_on",
     ]
 
     def form_valid(self, form):
-        form.instance.organizer = self.request.user.profile
+        form.instance.organizer.set() == self.request.user.profile
         return super().form_valid(form)
 
-class EventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
+class EventUpdateView(LoginRequiredMixin, UpdateView):
     required_role = "Event Organizer"
     model = Event
     template_name = "event_update.html"
     fields = [
         "title",
         "category",
-        "organizer",
+        #"organizer",
         "event_image",
         "description",
         "location",
@@ -94,7 +91,7 @@ class EventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
         return super().form_valid(form)
     
-def event_signup(request, pk):
+def eventsignup(request, pk):
     event = get_object_or_404(Event, pk=pk)
     
     if request.user.is_authenticated:

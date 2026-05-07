@@ -20,11 +20,7 @@ class Event(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
-    organizer = models.ManyToManyField(
-        "accounts.Profile",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
+    organizer = models.ManyToManyField('accounts.Profile')
     event_image = models.ImageField(
         upload_to="images/",
         blank=False,
@@ -56,12 +52,13 @@ class Event(models.Model):
         return self.title
     
     def get_absolute_url(self):
-        return reverse("localevents:event-detail", kwargs={"pk": self.pk})
+        return reverse('localevents:event-detail', kwargs={'pk': self.pk})
 
 class EventSignup(models.Model):
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
+        related_name="eventsignup"
     )
 
     user_registrant = models.ForeignKey(
@@ -69,6 +66,7 @@ class EventSignup(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        related_name="eventsignup"
     )
 
     new_registrant = models.CharField(
