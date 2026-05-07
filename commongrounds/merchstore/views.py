@@ -19,8 +19,8 @@ class ProductListView(ListView):
         context["other_products"] = Product.objects.all()
         if user.is_authenticated:
             profile = getattr(user, "profile", None)
-            context["your_products"] = Product.objects.filter(owner=profile)
-            context["other_products"] = Product.objects.exclude(owner=profile)
+            context["your_products"] = Product.objects.filter(owner_id=profile.id)
+            context["other_products"] = Product.objects.exclude(owner_id=profile.id)
         return context
 
 
