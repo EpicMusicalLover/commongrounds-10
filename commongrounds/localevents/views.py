@@ -94,10 +94,17 @@ class EventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
         return super().form_valid(form)
     
-class EventSignUpForm():
-    model = EventSignup
-    #insert code
-
-class BaseSignUpView():
-    model = EventSignup
-    #yeah this needs code pa
+def event_signup(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    
+    if request.user.is_authenticated:
+        EventSignup.objects.get_or_create(event=event, user_registrant=request.user.profile)
+        return redirect('localevents:event-detail', pk=pk)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            EventSignup.objects.create(event=event, new_registrant=name)
+            return redirect('localevents:event-detail', pk=pk)
+            
+    return render(request, 'localevents/event_signup_form.html', {'event': event})

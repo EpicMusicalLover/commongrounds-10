@@ -43,6 +43,7 @@ class Event(models.Model):
             ("done", "Done"),
             ("cancelled", "Cancelled"),
         ],
+        default='Available'
     )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -61,20 +62,18 @@ class EventSignup(models.Model):
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
-        null=True,
     )
-    # if self.request.user.is_authenticated:
+
     user_registrant = models.ForeignKey(
         "accounts.Profile",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
-        #set when registrant is logged in user (FOR EDITING)
+        blank=True,
     )
-    #else:
+
     new_registrant = models.CharField(
         max_length=255,
-        blank=True
-        #set when registrant is not logged in (FOR EDITING)
+        null=True,
+        blank=True,
     )
 
