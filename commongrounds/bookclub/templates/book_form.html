@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add a Book</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Title: {{ form.title }}</p>
+        <p>Genre: {{ form.genre }}</p>
+        <p>Author: {{ form.author }}</p>
+        <p>Synopsis: {{ form.synopsis }}</p>
+        <p>Publication Year: {{ form.publication_year }}</p>
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{% url 'bookclub:book_list' %}">Back to Book List</a>
+{% endblock %}

@@ -1,3 +1,5 @@
+{% extends "base.html" %}
+
 {% block content %}
     <h1>Book Club</h1>
     
@@ -6,10 +8,54 @@
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Genre:</strong> {{ book.genre }}</p>
     <p><strong>Published:</strong> {{ book.publication_year }}</p>
+    <p><strong>Synopsis:</strong> {{ book.synopsis }}</p>
+    <p><strong>Available to Borrow:</strong> {{ book.available_to_borrow }}</p>
 
     <hr>
     <p><strong>Created On:</strong> {{ book.created_on }}</p>
     <p><strong>Updated On:</strong> {{ book.updated_on }}</p>
+
+    {% if is_contributor %}
+        <a href="{% url 'bookclub:book_update' book.pk %}">Edit Book</a>
+    {% endif %}
+
+    <hr>
+    <h3>Bookmarks: {{ bookmark_count }}</h3>
+    {% if request.user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" name="action" value="bookmark">
+                {% if is_bookmarked %}Remove Bookmark{% else %}Bookmark{% endif %}
+            </button>
+        </form>
+    {% endif %}
+
+    <hr>
+    {% if book.available_to_borrow %}
+        <a href="{% url 'bookclub:book_borrow' book.pk %}" class="button">Borrow this Book</a>
+    {% else %}
+        <button disabled>Currently Unavailable for Borrowing</button>
+    {% endif %}
+
+    <hr>
+    <h3>Reviews</h3>
+    {% for review in reviews %}
+        <div>
+            <strong>{{ review.user_reviewer|default:"Anonymous" }}</strong> — {{ review.title }}
+            <p>{{ review.comment }}</p>
+        </div>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+
+    <h3>Leave a Review</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ review_form.as_p }}
+        <button type="submit">Submit Review</button>
+    </form>
+
+    <hr>
     <a href="{% url 'bookclub:book_list' %}">Back to Book List</a>
 
 {% endblock %}

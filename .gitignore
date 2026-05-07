@@ -3,3 +3,6 @@ db.sqlite3
 *.pyc
 *.log
 *.env
+.DS_Store
+commongrounds/accounts/migrations/0003_alter_profile_role.py
+commongrounds/bookclub/migrations/0002_book_available_to_borrow_book_contributor_and_more.py
